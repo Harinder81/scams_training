@@ -1,0 +1,1578 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+html{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px/1.4 system-ui,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Spot the Scam</title>
+<meta name="description" content="An interactive course that teaches you to recognize scam emails, texts, chat messages and phone calls.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Lexend:wght@500;600;700&display=swap">
+<style>
+/* Layout: one-screen slide course. Slim top bar with progress, one readable column per slide
+   (lesson + quiz side by side on wide screens), large Back / Next bar pinned at the bottom.
+   Type: Atkinson Hyperlegible (made for low-vision readers) for text, Lexend for headings. */
+:root{
+  --paper:#F3F6FA; --surface:#FFFFFF; --ink:#14213D; --muted:#4A5670; --line:#D2DAE6;
+  --primary:#1E3A8A; --primary-ink:#FFFFFF; --primary-soft:#E2E9F7;
+  --flag:#B45309; --flag-soft:#FDEFC8; --flag-line:#E39B2D;
+  --good:#166534; --good-soft:#DAF1E2; --bad:#B42318; --bad-soft:#FBE3DF;
+  --on-solid:#FFFFFF;
+  --bubble-in:#E8ECF2; --bubble-out:#2747A8; --bubble-out-ink:#FFFFFF;
+  --chat-bg:#E7EFE6; --chat-in:#FFFFFF; --chat-out:#D3EFCB;
+  --mock-btn:#2B5BD7; --mock-btn-ink:#FFFFFF; --frame:#1B2438;
+  --call-top:#1B2A4A; --call-ink:#F2F5FB;
+  --scrim:rgb(15 23 42 / .45);
+  --shadow:0 1px 2px rgb(20 33 61 / .06), 0 10px 28px rgb(20 33 61 / .09);
+  --font-body:"Atkinson Hyperlegible","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  --font-display:"Lexend","Segoe UI",system-ui,-apple-system,sans-serif;
+  --font-mono:ui-monospace,"Cascadia Mono",Consolas,"Courier New",monospace;
+  --scale:1;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1524; --surface:#162036; --ink:#E7ECF6; --muted:#A6B1C7; --line:#2B3955;
+    --primary:#93B2FF; --primary-ink:#0E1524; --primary-soft:#1F2D4F;
+    --flag:#F2A93B; --flag-soft:#3A2A10; --flag-line:#D18B23;
+    --good:#5BD38A; --good-soft:#12321F; --bad:#FF8B7B; --bad-soft:#3E1B17;
+    --on-solid:#0E1524;
+    --bubble-in:#24304A; --bubble-out:#3B5BC4; --bubble-out-ink:#FFFFFF;
+    --chat-bg:#101B16; --chat-in:#1E2A38; --chat-out:#1E4931;
+    --mock-btn:#3B6FE0; --mock-btn-ink:#FFFFFF; --frame:#2B3955;
+    --call-top:#0A1121; --call-ink:#F2F5FB;
+    --scrim:rgb(0 0 0 / .6);
+    --shadow:0 1px 2px rgb(0 0 0 / .3), 0 10px 28px rgb(0 0 0 / .35);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1524; --surface:#162036; --ink:#E7ECF6; --muted:#A6B1C7; --line:#2B3955;
+  --primary:#93B2FF; --primary-ink:#0E1524; --primary-soft:#1F2D4F;
+  --flag:#F2A93B; --flag-soft:#3A2A10; --flag-line:#D18B23;
+  --good:#5BD38A; --good-soft:#12321F; --bad:#FF8B7B; --bad-soft:#3E1B17;
+  --on-solid:#0E1524;
+  --bubble-in:#24304A; --bubble-out:#3B5BC4; --bubble-out-ink:#FFFFFF;
+  --chat-bg:#101B16; --chat-in:#1E2A38; --chat-out:#1E4931;
+  --mock-btn:#3B6FE0; --mock-btn-ink:#FFFFFF; --frame:#2B3955;
+  --call-top:#0A1121; --call-ink:#F2F5FB;
+  --scrim:rgb(0 0 0 / .6);
+  --shadow:0 1px 2px rgb(0 0 0 / .3), 0 10px 28px rgb(0 0 0 / .35);
+  color-scheme:dark;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%;font-size:calc(18px * var(--scale))}
+body{height:100%;margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:1rem;line-height:1.55;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--flag-line);outline-offset:2px}
+h1,h2,h3{font-family:var(--font-display);line-height:1.2;text-wrap:balance;margin:0}
+p{margin:0}
+#app{height:100%;display:grid;grid-template-rows:auto auto 1fr auto}
+.gut{padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.wrap{max-width:72rem;margin-inline:auto;width:100%}
+.ic{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* ---------- top bar ---------- */
+.top{background:var(--surface);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem 1rem;padding-block:.55rem}
+.brand{display:flex;align-items:center;gap:.55rem;font-family:var(--font-display);font-weight:700;font-size:1.05rem;letter-spacing:-.01em}
+.brand-mark{display:grid;place-items:center;width:2.1rem;height:2.1rem;border-radius:.55rem;background:var(--primary);color:var(--primary-ink)}
+.where{color:var(--muted);font-size:.9rem;font-variant-numeric:tabular-nums}
+.tools{margin-left:auto;display:flex;gap:.4rem;flex-wrap:wrap}
+.tbtn{display:inline-flex;align-items:center;gap:.4rem;min-height:2.6rem;padding:.3rem .8rem;border:1px solid var(--line);background:var(--surface);border-radius:.6rem;font-size:.9rem;cursor:pointer}
+.tbtn:hover{border-color:var(--primary);background:var(--primary-soft)}
+.tbtn[aria-pressed="true"]{background:var(--primary);color:var(--primary-ink);border-color:var(--primary)}
+.tbtn .big{font-weight:700;font-size:1.1em}
+.progress{height:6px;background:var(--line)}
+.progress i{display:block;height:100%;background:var(--primary);transition:width .35s ease}
+
+/* ---------- stage ---------- */
+#stage{overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth}
+.slide{padding-block:1.75rem 3rem}
+.slide-head{display:grid;gap:.5rem;margin-bottom:1.5rem;max-width:52rem}
+.eyebrow{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--primary);display:flex;align-items:center;gap:.5rem}
+.eyebrow .pill{background:var(--primary-soft);padding:.15rem .6rem;border-radius:99px}
+.slide h1{font-size:clamp(1.6rem, 1.1rem + 2vw, 2.35rem);font-weight:700;letter-spacing:-.015em}
+.lead{font-size:1.15rem;color:var(--muted);max-width:62ch}
+.prose{display:grid;gap:1rem;min-width:0}
+.prose>p,.prose li{max-width:65ch}
+.prose ul{margin:0;padding-left:1.25rem;display:grid;gap:.4rem}
+.prose h2{font-size:1.25rem;margin-top:.5rem}
+.lesson{display:grid;gap:2rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:960px){
+  .lesson.has-aside{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr)}
+  .lesson.has-aside>aside{position:sticky;top:1rem;align-self:start}
+}
+aside{display:grid;gap:1.25rem;min-width:0}
+.term{border-bottom:2px dotted var(--primary);cursor:help;border-radius:2px}
+.term:hover{background:var(--primary-soft)}
+.note{display:flex;gap:.75rem;align-items:flex-start;background:var(--primary-soft);padding:.9rem 1rem;border-radius:.8rem;max-width:65ch}
+.note .ic{color:var(--primary);margin-top:.15rem}
+.note.warn{background:var(--flag-soft)}
+.note.warn .ic{color:var(--flag)}
+
+.cards{display:grid;gap:.9rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:.9rem;padding:1rem 1.1rem;display:grid;gap:.45rem;align-content:start}
+.card h3{font-size:1.05rem;display:flex;align-items:center;gap:.6rem}
+.card p{color:var(--muted);font-size:.95rem}
+.icon-dot{display:grid;place-items:center;width:2.4rem;height:2.4rem;border-radius:50%;background:var(--primary-soft);color:var(--primary);flex:none}
+.card[data-tip]{cursor:help}
+.card[data-tip]:hover,.card[data-tip]:focus-visible{border-color:var(--primary)}
+.hint{font-size:.85rem;color:var(--primary);font-weight:700;display:flex;gap:.35rem;align-items:center}
+
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .8rem;border-radius:99px;background:var(--surface);border:1px solid var(--line);font-size:.95rem}
+.chip[data-tip]{cursor:help}
+.chip[data-tip]:hover{border-color:var(--primary)}
+
+.flow{display:flex;flex-wrap:wrap;gap:.5rem;align-items:stretch}
+.step{flex:1 1 11rem;background:var(--surface);border:1px solid var(--line);border-radius:.9rem;padding:.9rem 1rem;display:grid;gap:.3rem}
+.step b{font-family:var(--font-display);color:var(--primary);font-size:.85rem;text-transform:uppercase;letter-spacing:.07em}
+.flow .arr{align-self:center;color:var(--muted)}
+@media (max-width:640px){.flow{flex-direction:column}.flow .arr{transform:rotate(90deg);align-self:center}}
+
+.tiers{display:grid;gap:.9rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,13rem),1fr))}
+.tier{background:var(--surface);border:1px solid var(--line);border-radius:.9rem;padding:1rem;display:grid;gap:.5rem;align-content:start}
+.tier .reach{display:flex;gap:3px;flex-wrap:wrap}
+.tier .reach i{width:.6rem;height:.6rem;border-radius:50%;background:var(--line)}
+.tier .reach i.on{background:var(--flag-line)}
+
+.checklist{list-style:none;margin:0;padding:0;display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,19rem),1fr))}
+.checklist li{display:flex;gap:.75rem;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:.8rem;padding:.8rem .9rem;cursor:help}
+.checklist li:hover,.checklist li:focus-visible{border-color:var(--flag-line)}
+.checklist .ic{color:var(--flag);margin-top:.1rem}
+.checklist strong{display:block}
+.checklist span{color:var(--muted);font-size:.92rem}
+
+.rules{display:grid;gap:.9rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr))}
+.rule{background:var(--surface);border:1px solid var(--line);border-radius:.9rem;padding:1.1rem;display:grid;gap:.4rem;align-content:start}
+.rule .word{font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--primary);letter-spacing:-.01em}
+.rule p{color:var(--muted)}
+.report{display:grid;gap:.5rem}
+.report-row{display:flex;flex-wrap:wrap;gap:.25rem .75rem;align-items:baseline;padding:.6rem 0;border-bottom:1px solid var(--line)}
+.report-row b{min-width:12rem}
+.mono{font-family:var(--font-mono);font-size:.95em;overflow-wrap:anywhere}
+
+/* URL anatomy */
+.url-box{background:var(--surface);border:1px solid var(--line);border-radius:.9rem;padding:1rem;overflow-x:auto}
+.url{font-family:var(--font-mono);font-size:1.15rem;white-space:nowrap;display:inline-flex}
+.url span{padding:.2rem .1rem;border-radius:.25rem}
+.u-dim{color:var(--muted)}
+.u-own{background:var(--good-soft);color:var(--ink);font-weight:700;box-shadow:inset 0 -3px 0 var(--good)}
+.u-bad{background:var(--bad-soft);color:var(--ink);font-weight:700;box-shadow:inset 0 -3px 0 var(--bad)}
+.u-fake{background:var(--flag-soft);color:var(--ink)}
+.url-legend{display:flex;flex-wrap:wrap;gap:.5rem 1.25rem;margin-top:.75rem;font-size:.9rem;color:var(--muted)}
+.url-legend i{display:inline-block;width:.9rem;height:.9rem;border-radius:.2rem;vertical-align:-.1rem;margin-right:.35rem}
+.urlrows{display:grid;gap:.5rem}
+.urlrow{display:flex;justify-content:space-between;gap:.75rem;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:.7rem;padding:.65rem .9rem;cursor:help}
+.urlrow:hover,.urlrow:focus-visible{border-color:var(--primary)}
+.urlrow .mono{font-size:1rem}
+.demo{background:var(--surface);border:1px solid var(--line);border-radius:.9rem;overflow:hidden}
+.demo-body{padding:1.1rem;display:grid;gap:.75rem;justify-items:start}
+
+/* ---------- message mock-ups ---------- */
+.mock{background:var(--surface);border:1px solid var(--line);border-radius:1rem;box-shadow:var(--shadow);overflow:hidden;min-width:0}
+.mock-label{display:flex;justify-content:space-between;align-items:center;gap:.5rem;padding:.45rem 1rem;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);background:var(--paper);border-bottom:1px solid var(--line)}
+.eh{display:grid;grid-template-columns:4.6rem minmax(0,1fr);gap:.3rem .75rem;padding:.9rem 1.1rem;border-bottom:1px solid var(--line);font-size:.95rem}
+.eh .lab{color:var(--muted)}
+.eh>span{overflow-wrap:anywhere;min-width:0}
+.eh .subj{font-weight:700}
+.email-body{padding:1.1rem;display:grid;gap:.85rem;overflow-wrap:anywhere}
+.email-foot{font-size:.82rem;color:var(--muted)}
+.fakebtn{display:inline-block;background:var(--mock-btn);color:var(--mock-btn-ink);padding:.6rem 1.3rem;border-radius:.4rem;font-weight:700;cursor:pointer}
+.attach{display:inline-flex;gap:.5rem;align-items:center;border:1px solid var(--line);border-radius:.5rem;padding:.5rem .8rem;background:var(--paper);font-size:.95rem}
+.statusbar{font-family:var(--font-mono);font-size:.82rem;background:var(--paper);border-top:1px solid var(--line);padding:.5rem 1rem;color:var(--muted);overflow-wrap:anywhere;min-height:2.2rem}
+.statusbar.on{color:var(--ink);background:var(--flag-soft)}
+.lnk{color:var(--mock-btn);text-decoration:underline;overflow-wrap:anywhere}
+.bub.out .lnk{color:inherit}
+
+.phone{max-width:25rem;border:9px solid var(--frame);border-radius:2rem;margin-inline:auto;width:100%}
+.phone-top{display:grid;justify-items:center;gap:.2rem;padding:.9rem 1rem .7rem;border-bottom:1px solid var(--line);text-align:center}
+.avatar{display:grid;place-items:center;width:2.8rem;height:2.8rem;border-radius:50%;background:var(--bubble-in);color:var(--muted)}
+.phone-sender{font-weight:700;overflow-wrap:anywhere}
+.phone-top small{color:var(--muted);font-size:.8rem}
+.phone-body{display:flex;flex-direction:column;gap:.55rem;padding:1rem .9rem}
+.bub{max-width:88%;padding:.6rem .85rem;border-radius:1.1rem;background:var(--bubble-in);overflow-wrap:anywhere;border-bottom-left-radius:.35rem}
+.bub.out{margin-left:auto;background:var(--bubble-out);color:var(--bubble-out-ink);border-bottom-left-radius:1.1rem;border-bottom-right-radius:.35rem}
+.when{align-self:center;font-size:.75rem;color:var(--muted)}
+.chat .phone-body{background:var(--chat-bg)}
+.chat .bub{background:var(--chat-in);box-shadow:0 1px 1px rgb(0 0 0 / .08)}
+.chat .bub.out{background:var(--chat-out);color:var(--ink)}
+.chat-banner{align-self:center;text-align:center;font-size:.85rem;background:var(--surface);border:1px solid var(--line);border-radius:.6rem;padding:.4rem .8rem;max-width:95%}
+
+.call-top{background:var(--call-top);color:var(--call-ink);display:grid;justify-items:center;gap:.3rem;padding:1.1rem 1rem}
+.call-avatar{display:grid;place-items:center;width:3.2rem;height:3.2rem;border-radius:50%;background:rgb(255 255 255 / .14)}
+.call-id{font-family:var(--font-display);font-size:1.15rem;font-weight:600;text-align:center;white-space:pre-line}
+.call-top small{opacity:.8;font-size:.8rem}
+.call-top .seg.found,.call-top .seg.missed,.call-top .seg.shown{color:var(--ink)}
+.transcript{list-style:none;margin:0;padding:0}
+.line{display:grid;grid-template-columns:5.6rem minmax(0,1fr);gap:.75rem;padding:.7rem 1rem;border-bottom:1px solid var(--line)}
+.line:last-child{border-bottom:0}
+.line .who{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--primary);padding-top:.2rem}
+.line.you{background:var(--paper)}
+.line.you .who{color:var(--muted)}
+@media (max-width:480px){.line{grid-template-columns:minmax(0,1fr);gap:.15rem}}
+
+.popup .popup-bar{background:var(--bad);color:var(--on-solid);padding:.5rem 1rem;font-weight:700;display:flex;gap:.5rem;align-items:center}
+.popup .popup-body{padding:1rem;display:grid;gap:.6rem}
+.popup .popup-body .fakebtn{justify-self:start;background:var(--bad)}
+
+/* clickable / highlighted segments */
+.seg{border-radius:.25rem;-webkit-box-decoration-break:clone;box-decoration-break:clone;padding:.05em .08em}
+.play .seg{cursor:pointer;transition:background-color .15s}
+.play .seg:hover{background:var(--primary-soft);box-shadow:inset 0 -2px 0 var(--primary);color:var(--ink)}
+.seg.found{background:var(--good-soft);box-shadow:inset 0 -3px 0 var(--good);color:var(--ink)}
+.seg.missed,.seg.shown{background:var(--flag-soft);box-shadow:inset 0 -3px 0 var(--flag-line);color:var(--ink)}
+.seg.shown{cursor:help}
+.seg.lit{outline:3px solid var(--flag-line);outline-offset:2px}
+.seg.flash{background:var(--bad-soft);box-shadow:inset 0 -3px 0 var(--bad)}
+.seg[data-n]::after{content:attr(data-n);display:inline-grid;place-items:center;min-width:1.45em;height:1.45em;margin-left:.3em;border-radius:50%;font:700 .72em/1 var(--font-display);background:var(--good);color:var(--on-solid);vertical-align:.18em}
+.seg.missed[data-n]::after,.seg.shown[data-n]::after{background:var(--flag)}
+.fakebtn .seg.found,.fakebtn .seg.missed,.fakebtn .seg.shown{padding:.1em .2em}
+
+/* ---------- practice layout ---------- */
+.scenario{display:flex;gap:.75rem;align-items:flex-start;background:var(--surface);border:1px dashed var(--line);border-radius:.8rem;padding:.8rem 1rem;margin-bottom:1.25rem;max-width:62ch}
+.scenario .ic{color:var(--primary);margin-top:.15rem}
+.practice{display:grid;gap:1.5rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:960px){
+  .practice{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+  .practice .panel{position:sticky;top:1rem;align-self:start}
+}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:1rem;padding:1.1rem;display:grid;gap:1rem;min-width:0}
+.tally{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem}
+.tally strong{font-family:var(--font-display);font-size:1.1rem;font-variant-numeric:tabular-nums}
+.dots{display:flex;gap:.35rem;flex-wrap:wrap}
+.dot{width:1.05rem;height:1.05rem;border-radius:50%;border:2px solid var(--line)}
+.dot.on{background:var(--good);border-color:var(--good)}
+.dot.miss{background:var(--flag-line);border-color:var(--flag-line)}
+.fbcard{display:flex;gap:.75rem;align-items:flex-start;padding:.85rem 1rem;border-radius:.8rem;border:2px solid transparent;background:var(--primary-soft)}
+.fbcard .fbi{display:grid;place-items:center;width:2rem;height:2rem;border-radius:50%;flex:none;background:var(--primary);color:var(--primary-ink)}
+.fbcard.good{background:var(--good-soft);border-color:var(--good)}
+.fbcard.good .fbi{background:var(--good);color:var(--on-solid)}
+.fbcard.bad{background:var(--bad-soft);border-color:var(--bad)}
+.fbcard.bad .fbi{background:var(--bad);color:var(--on-solid)}
+.fbcard strong{display:block;font-family:var(--font-display);margin-bottom:.15rem}
+.fbcard p+p{margin-top:.4rem}
+.flaglist{list-style:none;margin:0;padding:0;display:grid;gap:.7rem}
+.flaglist li{display:grid;grid-template-columns:2rem minmax(0,1fr);gap:.65rem;align-items:start}
+.flaglist li[data-flag]{cursor:default}
+.num{display:grid;place-items:center;width:2rem;height:2rem;border-radius:50%;font:700 .9rem/1 var(--font-display);background:var(--good);color:var(--on-solid)}
+.flaglist .todo .num{background:transparent;border:2px dashed var(--line);color:var(--muted)}
+.flaglist .todo span{color:var(--muted);padding-top:.25rem}
+.flaglist .miss .num,.legend .num{background:var(--flag);color:var(--on-solid)}
+.flaglist p,.legend p{color:var(--muted);font-size:.95rem;margin-top:.1rem}
+.flaglist .tag{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--flag);margin-left:.35rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:3rem;padding:.55rem 1.2rem;border-radius:.75rem;border:2px solid var(--primary);background:var(--surface);color:var(--primary);font-weight:700;cursor:pointer;text-align:center}
+.btn:hover:not(:disabled){background:var(--primary-soft)}
+.btn.solid{background:var(--primary);color:var(--primary-ink)}
+.btn.solid:hover:not(:disabled){filter:brightness(1.1)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn-row{display:flex;flex-wrap:wrap;gap:.6rem}
+.legend{list-style:none;margin:0;padding:0;display:grid;gap:.75rem}
+.legend li{display:grid;grid-template-columns:2rem minmax(0,1fr);gap:.65rem;align-items:start;padding:.4rem;border-radius:.6rem;cursor:default}
+.legend li:hover,.legend li:focus-visible{background:var(--flag-soft)}
+
+/* ---------- quiz ---------- */
+.quiz{background:var(--surface);border:1px solid var(--line);border-radius:1rem;padding:1.2rem;display:grid;gap:.9rem;align-content:start;min-width:0}
+.quiz .mock{box-shadow:none}
+.quiz .phone{border-width:6px}
+.q-label{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--flag);display:flex;align-items:center;gap:.4rem}
+.q-context{color:var(--muted);font-style:italic}
+.q{font-size:1.15rem;font-weight:600}
+.opts{display:grid;gap:.6rem}
+.opt{display:grid;grid-template-columns:2.2rem minmax(0,1fr);gap:.75rem;align-items:center;text-align:left;width:100%;padding:.75rem .9rem;min-height:3.3rem;border:2px solid var(--line);border-radius:.8rem;background:var(--surface);cursor:pointer;line-height:1.4}
+.opt:hover:not(:disabled){border-color:var(--primary);background:var(--primary-soft)}
+.letter{display:grid;place-items:center;width:2.2rem;height:2.2rem;border-radius:50%;background:var(--primary-soft);color:var(--primary);font:700 1rem/1 var(--font-display)}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.right .letter{background:var(--good);color:var(--on-solid)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .letter{background:var(--bad);color:var(--on-solid)}
+.opt:disabled{cursor:default}
+.opt:disabled:not(.right):not(.wrong){opacity:.6}
+.quizgrid{display:grid;gap:1.25rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr));align-items:start}
+
+/* ---------- results ---------- */
+.score-hero{display:flex;flex-wrap:wrap;gap:1.5rem 2rem;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:1.1rem;padding:1.4rem}
+.ring{width:9.5rem;height:9.5rem;flex:none}
+.ring circle{fill:none;stroke-width:12}
+.ring .track{stroke:var(--line)}
+.ring .val{stroke:var(--primary);stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset .8s ease}
+.ring text{fill:var(--ink);font:700 1.7rem var(--font-display);text-anchor:middle;dominant-baseline:central}
+.score-copy{flex:1 1 18rem;display:grid;gap:.5rem;min-width:0}
+.score-copy h2{font-size:1.5rem}
+.stats{display:grid;gap:.75rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr));margin-top:1.25rem}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:.8rem;padding:.8rem 1rem}
+.stat b{display:block;font:700 1.45rem var(--font-display);font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:.9rem}
+.res-cols{display:grid;gap:1.5rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,24rem),1fr));margin-top:1.75rem;align-items:start}
+.res-group{display:grid;gap:.75rem}
+.res-group h2{font-size:1.2rem;display:flex;gap:.5rem;align-items:center}
+.crow{background:var(--surface);border:1px solid var(--line);border-radius:.8rem;padding:.85rem 1rem;display:grid;gap:.5rem}
+.crow-top{display:flex;justify-content:space-between;gap:.5rem;align-items:baseline;flex-wrap:wrap}
+.crow-top b{font-weight:700}
+.crow-top span{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.9rem}
+.bar{height:.6rem;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:inherit;background:var(--good)}
+.crow.mid .bar i{background:var(--flag-line)}
+.crow.low .bar i{background:var(--bad)}
+.crow p{color:var(--muted);font-size:.92rem}
+.status{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:.15rem .55rem;border-radius:99px;background:var(--good-soft);color:var(--good)}
+.crow.mid .status{background:var(--flag-soft);color:var(--flag)}
+.crow.low .status{background:var(--bad-soft);color:var(--bad)}
+.crow .btn{justify-self:start;min-height:2.6rem;padding:.35rem .9rem;font-size:.92rem}
+.empty{color:var(--muted);font-style:italic}
+.confirm{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;background:var(--bad-soft);border-radius:.8rem;padding:.8rem 1rem}
+
+/* ---------- bottom nav ---------- */
+.nav{background:var(--surface);border-top:1px solid var(--line)}
+.nav .wrap{display:flex;justify-content:space-between;align-items:center;gap:.75rem;padding-block:.65rem}
+.navbtn{display:inline-flex;align-items:center;gap:.5rem;min-height:3.3rem;padding:.55rem 1.4rem;font-size:1.1rem;font-weight:700;border-radius:.8rem;border:2px solid var(--line);background:var(--surface);cursor:pointer}
+.navbtn:hover:not(:disabled){border-color:var(--primary);background:var(--primary-soft)}
+.navbtn.primary{background:var(--primary);color:var(--primary-ink);border-color:var(--primary)}
+.navbtn.primary:hover:not(:disabled){background:var(--primary);filter:brightness(1.1)}
+.navbtn:disabled{opacity:.4;cursor:default}
+.nav-hint{color:var(--muted);font-size:.9rem;text-align:center}
+@media (max-width:560px){.nav-hint{display:none}.navbtn{padding-inline:1rem}.tbtn .lbl{display:none}}
+
+/* ---------- tooltip, pop, drawer ---------- */
+#tip{position:fixed;z-index:50;max-width:min(23rem, calc(100vw - 24px));background:var(--ink);color:var(--paper);padding:.75rem .9rem;border-radius:.7rem;font-size:.95rem;line-height:1.45;box-shadow:var(--shadow);pointer-events:none}
+#tip strong{display:block;font-family:var(--font-display);margin-bottom:.2rem}
+.pop{position:fixed;z-index:60;display:flex;gap:.35rem;align-items:center;padding:.4rem .85rem;border-radius:99px;font-weight:700;font-size:.95rem;background:var(--good);color:var(--on-solid);pointer-events:none;white-space:nowrap;max-width:calc(100vw - 24px);overflow:hidden;text-overflow:ellipsis;transform:translate(-50%,-110%);animation:pop 1.9s ease forwards;box-shadow:var(--shadow)}
+.pop.bad{background:var(--bad)}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,-60%) scale(.85)}12%{opacity:1;transform:translate(-50%,-110%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-150%)}}
+.drawer{position:fixed;inset:0;z-index:40;background:var(--scrim);display:flex;justify-content:flex-end}
+.drawer-panel{background:var(--surface);width:min(27rem,100%);height:100%;overflow-y:auto;padding:1.2rem max(16px, env(safe-area-inset-right, 0px)) 2rem 1.2rem;display:grid;gap:1rem;align-content:start}
+.drawer-head{display:flex;justify-content:space-between;align-items:center}
+.drawer h2{font-size:1.2rem}
+.drawer h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);margin-top:.5rem}
+.toc{list-style:none;margin:0;padding:0;display:grid;gap:.3rem}
+.toc button{width:100%;display:grid;grid-template-columns:1.6rem minmax(0,1fr);gap:.6rem;align-items:center;text-align:left;padding:.55rem .7rem;border-radius:.6rem;border:1px solid transparent;background:none;cursor:pointer}
+.toc button:hover{background:var(--primary-soft)}
+.toc button[aria-current="true"]{border-color:var(--primary);background:var(--primary-soft);font-weight:700}
+.toc .st{display:grid;place-items:center;width:1.6rem;height:1.6rem;border-radius:50%;border:2px solid var(--line);font-size:.75rem;color:var(--muted)}
+.toc .st.done{background:var(--good);border-color:var(--good);color:var(--on-solid)}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;scroll-behavior:auto!important}
+  .pop{animation:popfade 1.9s linear forwards}
+  @keyframes popfade{0%,85%{opacity:1}100%{opacity:0}}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top gut">
+    <div class="wrap">
+      <div class="brand"><span class="brand-mark" id="brandMark"></span>Spot the Scam</div>
+      <span class="where" id="where">Lesson 1 of 13</span>
+      <div class="tools">
+        <button class="tbtn" id="smaller" type="button" aria-label="Make text smaller">A<span class="lbl">&minus;</span></button>
+        <button class="tbtn" id="bigger" type="button" aria-label="Make text bigger"><span class="big">A</span><span class="lbl">+</span></button>
+        <button class="tbtn" id="speak" type="button" aria-pressed="false" hidden></button>
+        <button class="tbtn" id="openToc" type="button"></button>
+      </div>
+    </div>
+  </header>
+  <div class="progress" aria-hidden="true"><i id="bar" style="width:0"></i></div>
+  <main id="stage" tabindex="-1"></main>
+  <footer class="nav gut">
+    <div class="wrap">
+      <button class="navbtn" id="back" type="button"></button>
+      <span class="nav-hint" id="navHint">Tip: you can also use the arrow keys</span>
+      <button class="navbtn primary" id="next" type="button"></button>
+    </div>
+  </footer>
+</div>
+<div id="tip" role="tooltip" hidden></div>
+<div class="drawer" id="drawer" hidden>
+  <div class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="tocTitle">
+    <div class="drawer-head"><h2 id="tocTitle">All slides</h2><button class="tbtn" id="closeToc" type="button">Close</button></div>
+    <div id="tocBody"></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ================= helpers ================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+
+const ICONS = {
+  shield:'<path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+  mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+  phone:'<path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/>',
+  sms:'<rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M10 18h4"/>',
+  chat:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.1A8 8 0 1 1 21 12z"/>',
+  target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
+  alert:'<path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.2v.3"/>',
+  money:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 9.5v5M18 9.5v5"/>',
+  id:'<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2.4"/><path d="M5.8 16c.8-1.5 1.9-2.2 3.2-2.2s2.4.7 3.2 2.2M14.5 10h4M14.5 13.5h3"/>',
+  key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l2.5 2.5M14.5 8.5l2 2"/>',
+  laptop:'<rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M2 19.5h20"/>',
+  gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9M12 8v13M12 8C10 4 6 4 6 6.5S9 8 12 8zM12 8c2-4 6-4 6-1.5S15 8 12 8z"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/>',
+  hush:'<path d="M3 3l18 18M10.6 6.1A9.6 9.6 0 0 1 12 6c5 0 9 6 9 6a17 17 0 0 1-3 3.5M6.6 6.6A17 17 0 0 0 3 12s4 6 9 6a9 9 0 0 0 4.4-1.2"/>',
+  link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7"/>',
+  x:'<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8v.2"/>',
+  speaker:'<path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>',
+  stop:'<rect x="6" y="6" width="12" height="12" rx="2"/>',
+  list:'<path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
+  left:'<path d="M15 5l-7 7 7 7"/>',
+  right:'<path d="M9 5l7 7-7 7"/>',
+  arrow:'<path d="M4 12h15M13 6l6 6-6 6"/>',
+  whale:'<path d="M2.5 12.5c0 3.6 3.4 5.8 8.2 5.8 5.4 0 8.4-3.2 9.3-7.3l2-2.2-3 .4c-1-1.6-2.6-2.1-4.2-1.5-2.1.8-2.2 3.3-5.3 3.3-3 0-4.4-1.5-7-1.5z"/><path d="M8 14.6h.01"/>',
+  hook:'<path d="M12 2.5V14a4 4 0 0 1-8 0v-1.5"/><path d="M4 12.5l2.4-2.2"/>',
+  family:'<circle cx="9" cy="8" r="3.4"/><path d="M2.6 20c.8-3.6 3.3-5.5 6.4-5.5s5.6 1.9 6.4 5.5"/><circle cx="17.2" cy="9.2" r="2.5"/><path d="M16.4 14.6c2.6.1 4.5 1.8 5.3 4.9"/>',
+  bank:'<path d="M3 10l9-6 9 6M5 10v8M9.6 10v8M14.4 10v8M19 10v8M3 20.5h18"/>',
+  bolt:'<path d="M13 2.5L4.5 14h7l-1 7.5 8.5-11.5h-7z"/>',
+  trophy:'<path d="M8 4h8v5a4 4 0 0 1-8 0zM8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9 17h6"/>',
+  person:'<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1-4 4-6 7.5-6s6.5 2 7.5 6"/>',
+  clip:'<path d="M20 11.5l-8.3 8.3a5 5 0 0 1-7-7L13 4.5a3.3 3.3 0 0 1 4.7 4.7l-8.2 8.2a1.7 1.7 0 0 1-2.4-2.4l7.6-7.6"/>',
+  eye:'<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/>',
+  cursor:'<path d="M5 3l14 7-6 2-2 6z"/>',
+  book:'<path d="M4 4.5h6a2 2 0 0 1 2 2V20a1.5 1.5 0 0 0-1.5-1.5H4zM20 4.5h-6a2 2 0 0 0-2 2V20a1.5 1.5 0 0 1 1.5-1.5H20z"/>',
+  star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
+  redo:'<path d="M20 8a8.5 8.5 0 1 0 1 6"/><path d="M20 3v5h-5"/>'
+};
+const icon = (n, cls = "") => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ""}</svg>`;
+const term = (word, tip, title = "") => `<span class="term" tabindex="0" data-tip="${esc(tip)}"${title ? ` data-tip-title="${esc(title)}"` : ""}>${word}</span>`;
+
+/* ================= concepts (scoring topics) ================= */
+const CONCEPTS = {
+  sender:{name:"Checking who it’s really from", about:"Looking past the display name to the real email address, phone number or caller.", lessons:["anatomy-email","anatomy-text"]},
+  links:{name:"Fake links and attachments", about:"Reading web addresses, hovering before clicking, and not opening surprise attachments.", lessons:["links","anatomy-text"]},
+  urgency:{name:"Pressure, threats and rushing", about:"Deadlines, threats of arrest or closure, and “act now” language.", lessons:["phone-flags","goals"]},
+  info:{name:"Requests for passwords, codes and personal details", about:"No real company asks for your PIN, password, one-time code or full Social Security number.", lessons:["goals","messaging"]},
+  payment:{name:"Strange ways to pay", about:"Gift cards, wire transfers, crypto, cash couriers and “safe accounts” are scam payment methods.", lessons:["phone-flags","phone-scripts"]},
+  impersonation:{name:"Pretending to be someone you trust", about:"Fake banks, government agencies, bosses and family members, including faked caller ID.", lessons:["phone-scripts","spear"]},
+  secrecy:{name:"Secrecy and cutting you off", about:"“Don’t tell anyone”, “can’t talk right now”, “stay on the line”.", lessons:["phone-flags","messaging"]},
+  bait:{name:"Too good to be true, or a surprise problem", about:"Prizes, refunds and investments, or a problem you never knew you had.", lessons:["phone-scripts","smishing"]},
+  clues:{name:"Small clues: greetings and spelling", about:"Generic greetings like “Dear Customer” and spelling mistakes.", lessons:["anatomy-email"]},
+  action:{name:"Knowing what to do next", about:"Stop, check with the real company yourself, talk to someone, and report it.", lessons:["rules","phishing"]}
+};
+
+/* ================= slides ================= */
+const SLIDES = [
+/* ---------------------------------------------------------------- LEARN */
+{ id:"welcome", section:"learn", kind:"lesson", title:"Learn to spot a scam before it costs you",
+  lead:"Scammers send millions of fake emails, texts, chat messages and phone calls every day. This short course shows you their tricks, then lets you practice catching them.",
+  body:() => `
+  <div id="resumeBox"></div>
+  <h2>How this course works</h2>
+  <div class="flow">
+    <div class="step"><b>Part 1 · Learn</b><span>13 short lessons about the most common scams and their warning signs.</span></div>
+    <span class="arr">${icon("arrow")}</span>
+    <div class="step"><b>Part 2 · Practice</b><span>Real-looking messages and phone calls. Click on the parts that look wrong.</span></div>
+    <span class="arr">${icon("arrow")}</span>
+    <div class="step"><b>Your results</b><span>Your score, what you did well, and which lessons to look at again.</span></div>
+  </div>
+  <h2>Helpful tips</h2>
+  <ul>
+    <li>Words with a dotted line under them have extra help. Point your mouse at one, or tap it: try it on ${term("red flag","A red flag is a warning sign that something is wrong. In this course, a red flag is any clue that a message or call is a scam.","Red flag")}.</li>
+    <li>Use the <b>A&minus;</b> and <b>A+</b> buttons at the top to make the text smaller or bigger.</li>
+    <li>Press <b>Read aloud</b> at the top to hear the slide (if your browser supports it).</li>
+    <li>Move with the big <b>Back</b> and <b>Next</b> buttons at the bottom. <b>All slides</b> lets you jump to any lesson.</li>
+    <li>Your answers are saved on this computer, so you can take a break and come back.</li>
+  </ul>
+  <div class="note">${icon("shield")}<p>Nothing in this course is real. Every company name, phone number and web address in the examples is made up for practice.</p></div>`
+},
+{ id:"goals", section:"learn", kind:"lesson", title:"What scammers are after",
+  lead:"Almost every scam wants one of four things from you. If a message or call asks for any of these, slow down.",
+  body:() => `
+  <div class="cards">
+    <div class="card"><h3><span class="icon-dot">${icon("money")}</span>Your money</h3><p>Wire transfers, gift cards, cryptocurrency, payment apps, or cash picked up at your door.</p></div>
+    <div class="card"><h3><span class="icon-dot">${icon("id")}</span>Your identity</h3><p>Social Security number, Medicare number, date of birth, driver’s license. Used to open accounts in your name.</p></div>
+    <div class="card"><h3><span class="icon-dot">${icon("key")}</span>Your accounts</h3><p>Passwords, PINs and ${term("one-time codes","A short code (often 6 digits) that a company texts or emails you when you sign in. It proves it’s really you. Anyone who has it can get into your account.","One-time code")}. These unlock your bank, email and shopping accounts.</p></div>
+    <div class="card"><h3><span class="icon-dot">${icon("laptop")}</span>Your computer or phone</h3><p>Getting you to install an app that lets them ${term("control your screen","Called “remote access”. Programs like this are real tools, but a scammer uses them to see your passwords and move your money while you watch.","Remote access")} or that secretly steals information.</p></div>
+  </div>
+  <h2>Their secret weapon is your emotions</h2>
+  <p>Scammers know that strong feelings make people act fast. Point at each feeling to see how they use it.</p>
+  <div class="chips">
+    <span class="chip" tabindex="0" data-tip-title="Fear" data-tip="“Your account will be closed.” “There is a warrant for your arrest.” Fear makes you want to fix the problem right now.">Fear</span>
+    <span class="chip" tabindex="0" data-tip-title="Urgency" data-tip="“Within 24 hours.” “Today only.” A deadline gives you no time to stop and check.">Urgency</span>
+    <span class="chip" tabindex="0" data-tip-title="Excitement" data-tip="“You’ve won!” “You’re owed a refund.” Good news makes us drop our guard.">Excitement</span>
+    <span class="chip" tabindex="0" data-tip-title="Love and worry" data-tip="“Grandma, I’m in trouble.” Caring about family makes you want to help without asking questions.">Love and worry</span>
+    <span class="chip" tabindex="0" data-tip-title="Trust" data-tip="They pretend to be your bank, the government, your boss or a well-known company, because you already trust them.">Trust</span>
+  </div>`,
+  quizzes:[{ id:"q-goals", concept:"urgency",
+    q:"A message tries to make you scared or rushed. Why do scammers do this?",
+    options:[
+      {t:"So you act before you stop to think or check", ok:true, why:"Exactly. When you feel rushed, you skip the steps that would expose the scam. Slowing down is your best defense."},
+      {t:"Because real problems are always urgent", ok:false, why:"Real companies give you time and send letters. Extreme urgency is a trick, not a sign that it’s real."},
+      {t:"To help you protect your account faster", ok:false, why:"That’s what they want you to believe. The rush is there so you won’t check whether the message is real."}
+    ]}]
+},
+{ id:"phishing", section:"learn", kind:"lesson", title:"Phishing: fake emails",
+  lead:"Phishing (said like “fishing”) is an email that pretends to come from a company you trust. The scammer throws out bait and waits for someone to bite.",
+  body:() => `
+  <h2>How a phishing email works</h2>
+  <div class="flow">
+    <div class="step"><b>1 · The bait</b><span>An email that looks like it’s from your bank, a store or a delivery company, with a scary or exciting message.</span></div>
+    <span class="arr">${icon("arrow")}</span>
+    <div class="step"><b>2 · The hook</b><span>A link to a fake website that looks real, or an attachment to open.</span></div>
+    <span class="arr">${icon("arrow")}</span>
+    <div class="step"><b>3 · The catch</b><span>You type your password or card number. The scammer now has it, or harmful software is installed.</span></div>
+  </div>
+  <h2>Common disguises</h2>
+  <div class="chips">
+    <span class="chip">${icon("bank")}Your bank</span><span class="chip">${icon("gift")}Online stores</span><span class="chip">${icon("mail")}Delivery companies</span>
+    <span class="chip">${icon("laptop")}Streaming services</span><span class="chip">${icon("id")}Tax agencies</span><span class="chip">${icon("key")}Your email provider</span>
+  </div>
+  <div class="note warn">${icon("alert")}<p>Phishing emails can look perfect, with the real logo and colors. Copying a logo is easy. Don’t judge by how it looks. Judge by <b>what it asks you to do</b>.</p></div>`,
+  quizzes:[{ id:"q-phish", concept:"action",
+    q:"An email says “Your account is locked. Click here to unlock it.” What is the safest thing to do?",
+    options:[
+      {t:"Click the link to see if it’s real", ok:false, why:"Clicking can take you to a fake site that steals your login, or install harmful software. Never use the link in a surprise email."},
+      {t:"Reply and ask if the email is real", ok:false, why:"Your reply goes straight to the scammer, who will happily say “yes, it’s real”."},
+      {t:"Ignore the link. Open the company’s app or type its website yourself, or call the number on your card", ok:true, why:"Right. Going to the company on your own, using a number or website you already know, means you can’t land on a fake."}
+    ]}]
+},
+{ id:"spear", section:"learn", kind:"lesson", title:"Spear phishing and whaling",
+  lead:"Some scams are sent to millions of people. Others are aimed at one person, using details about them to seem real.",
+  body:() => `
+  <div class="tiers">
+    <div class="tier"><h3>${icon("hook")} Phishing</h3><div class="reach" aria-label="Sent to many people">${'<i class="on"></i>'.repeat(24)}</div><p>A wide net. The same email goes to millions of people, hoping a few will bite.</p></div>
+    <div class="tier"><h3>${icon("target")} Spear phishing</h3><div class="reach" aria-label="Sent to a few people">${'<i class="on"></i>'.repeat(3)}${'<i></i>'.repeat(21)}</div><p>Aimed at you. Uses your name, your job, your church or your grandchildren’s names, often found on ${term("social media","Facebook, Instagram, LinkedIn and similar sites. Scammers read public posts to learn about you and your family.")}.</p></div>
+    <div class="tier"><h3>${icon("whale")} Whaling</h3><div class="reach" aria-label="Sent to one important person">${'<i class="on"></i>'}${'<i></i>'.repeat(23)}</div><p>Aimed at the “big fish”: bosses, business owners and people who handle money. Often a fake email from the boss.</p></div>
+  </div>
+  <h2>The fake boss email</h2>
+  <p>A common whaling trick is ${term("Business Email Compromise","Scammers pretend to be a company leader or supplier and ask staff to wire money, change payment details, or buy gift cards. It costs businesses billions every year.","Business Email Compromise (BEC)")}. An email that seems to come from the boss asks an employee to quickly pay an invoice, wire money or buy gift cards, and to keep it quiet.</p>
+  <p>Volunteers at clubs, churches and charities get the same trick from the “pastor” or “club president”.</p>`,
+  quizzes:[{ id:"q-spear", concept:"impersonation",
+    q:"An email that seems to be from your company’s CEO asks you to quietly buy gift cards for clients and email the codes. What is this most likely?",
+    options:[
+      {t:"A normal request from a busy boss", ok:false, why:"Real companies don’t pay for things with gift card codes sent by email, and real bosses don’t ask you to keep purchases secret."},
+      {t:"A whaling scam pretending to be your boss", ok:true, why:"Yes. Gift cards plus secrecy plus “I’m too busy to talk” is a classic fake-boss scam. Check with your boss in person or on a number you already have."},
+      {t:"Just an advertisement", ok:false, why:"It’s not an ad. It’s a targeted scam pretending to be someone you work for."}
+    ]}]
+},
+{ id:"smishing", section:"learn", kind:"lesson", title:"Smishing: scam text messages",
+  lead:"Smishing is phishing by text message (SMS). Texts are short, phones hide the full web address, and we tend to trust them, which is why scammers love them.",
+  body:() => `
+  <h2>Texts you’ll probably see</h2>
+  <div class="cards">
+    <div class="card" tabindex="0" data-tip-title="What it says" data-tip="“Your package is on hold due to an incomplete address. Update here.”"><h3><span class="icon-dot">${icon("mail")}</span>Delivery problem</h3><p>A package you may not have ordered needs a “small fee” or “address update”.</p><span class="hint">${icon("cursor")}Point here for an example</span></div>
+    <div class="card" tabindex="0" data-tip-title="What it says" data-tip="“You have an unpaid toll of $4.15. Pay today to avoid a $50 fee.”"><h3><span class="icon-dot">${icon("money")}</span>Unpaid toll or fine</h3><p>A tiny amount you supposedly owe, with a threat if you don’t pay today.</p><span class="hint">${icon("cursor")}Point here for an example</span></div>
+    <div class="card" tabindex="0" data-tip-title="What it says" data-tip="“Bank Alert: Did you try to spend $1,200? Reply YES or NO.” Replying starts a phone call from a fake fraud team."><h3><span class="icon-dot">${icon("bank")}</span>Bank alert</h3><p>A fake fraud alert that leads to a call from a fake “fraud department”.</p><span class="hint">${icon("cursor")}Point here for an example</span></div>
+    <div class="card" tabindex="0" data-tip-title="What it says" data-tip="“Hi, is this Linda? We met at the reunion.” A friendly chat that slowly turns into a request for money or an investment."><h3><span class="icon-dot">${icon("chat")}</span>“Wrong number”</h3><p>A friendly stranger who texted “by mistake” and keeps chatting.</p><span class="hint">${icon("cursor")}Point here for an example</span></div>
+  </div>
+  <div class="note">${icon("info")}<p><b>Don’t reply to unknown numbers</b>, not even “STOP”. Any reply tells the scammer your number works. In the US, you can forward scam texts to <b>7726</b> (it spells SPAM) and then delete them.</p></div>`,
+  quizzes:[{ id:"q-smish", concept:"bait",
+    q:"A text says: “TollPass: You owe $4.15 in unpaid tolls. Pay today to avoid a $50 late fee: tollpass-pay.info”. You didn’t drive on a toll road. What should you do?",
+    options:[
+      {t:"Pay it. It’s only $4.15", ok:false, why:"The small amount is the trick. They want your card number so they can make much bigger charges later."},
+      {t:"Delete it. If you’re unsure, check your toll account yourself on the official website or phone number", ok:true, why:"Correct. A surprise bill with a strange link and a deadline is a scam. Check on your own if you’re worried."},
+      {t:"Reply STOP so they won’t text again", ok:false, why:"Replying tells scammers your number is active, and you’ll get even more scam texts."}
+    ]}]
+},
+{ id:"messaging", section:"learn", kind:"lesson", title:"Scams on WhatsApp and chat apps",
+  lead:"WhatsApp, Facebook Messenger, Telegram and similar apps feel personal, so scammers use them to pretend to be friends and family.",
+  body:() => `
+  <div class="cards">
+    <div class="card"><h3><span class="icon-dot">${icon("family")}</span>“Hi Mum, new number”</h3><p>Someone pretends to be your child or grandchild on a new phone, then asks you to pay an urgent bill.</p></div>
+    <div class="card"><h3><span class="icon-dot">${icon("key")}</span>“I sent you my code by mistake”</h3><p>A friend’s hacked account asks for a 6-digit code sent to your phone. That code lets them take over <b>your</b> account.</p></div>
+    <div class="card"><h3><span class="icon-dot">${icon("money")}</span>Friendly stranger, then investing</h3><p>After weeks of kind messages, a new “friend” shows you how much they’ve made with crypto. It’s called ${term("pig butchering","Scammers spend weeks or months building trust (“fattening the pig”) before persuading the victim to invest in a fake crypto platform. Victims often lose their life savings.","Pig butchering")}.</p></div>
+    <div class="card"><h3><span class="icon-dot">${icon("laptop")}</span>Easy job offers</h3><p>“Earn $300 a day liking videos.” Later, you’re asked to pay to unlock your earnings.</p></div>
+  </div>
+  <div class="note warn">${icon("alert")}<p>If a family member messages from a new number, <b>call their old number</b> or ask a question only they would know before doing anything.</p></div>`,
+  quizzes:[{ id:"q-msg", concept:"info",
+    q:"A friend messages you: “Hi! I accidentally sent a 6-digit code to your phone. Can you send it back to me?” What should you do?",
+    options:[
+      {t:"Send it. It’s my friend", ok:false, why:"Your friend’s account has probably been taken over. The code is for your account, and sending it gives the scammer control of it."},
+      {t:"Don’t send it. Contact your friend another way, like a phone call", ok:true, why:"Right. Never share a code that was sent to you. Calling your friend lets you warn them that their account was hacked."},
+      {t:"Send only the first three numbers", ok:false, why:"Don’t share any part of it. A code is like a key, and only you should use it."}
+    ]}]
+},
+{ id:"phone-intro", section:"learn", kind:"lesson", title:"Phone scams: why they work",
+  lead:"Phone scams are called vishing (voice phishing). A live, confident voice can be more convincing than any email.",
+  body:() => `
+  <div class="cards">
+    <div class="card"><h3><span class="icon-dot">${icon("phone")}</span>Caller ID can lie</h3><p>Scammers can make any name or number show up, even your bank’s real number or “Police”. This is called ${term("spoofing","Faking the name or number that appears on your caller ID. It’s cheap and easy, so caller ID never proves who is calling.","Spoofing")}.</p></div>
+    <div class="card"><h3><span class="icon-dot">${icon("speaker")}</span>Voices can be copied</h3><p>With a few seconds of someone’s voice from a video online, ${term("AI voice cloning","Computer programs can now copy a person’s voice from a short recording. Scammers use it to sound like a grandchild, a child or a boss.","AI voice cloning")} can make a scammer sound like your grandchild.</p></div>
+    <div class="card"><h3><span class="icon-dot">${icon("book")}</span>They follow a script</h3><p>Scammers practice what to say, and have an answer for every question. Being polite and friendly is part of the act.</p></div>
+    <div class="card"><h3><span class="icon-dot">${icon("eye")}</span>They may know things about you</h3><p>Your address or the last digits of your card may have leaked online. Knowing a detail doesn’t prove they’re real.</p></div>
+  </div>
+  <div class="note">${icon("shield")}<p>You are always allowed to hang up. A real bank or agency will never be upset if you hang up and call them back on a number you trust.</p></div>`,
+  quizzes:[{ id:"q-phone", concept:"impersonation",
+    q:"Your phone shows “Northgate Bank” and the bank’s real phone number. Does that prove the call is from your bank?",
+    options:[
+      {t:"Yes, the number matches", ok:false, why:"Caller ID can be faked to show any name and number, including your bank’s real one."},
+      {t:"No. Hang up and call the number on the back of your card", ok:true, why:"Correct. Calling back on a number you already trust is the only way to be sure who you’re talking to."},
+      {t:"Yes, if they also know your name", ok:false, why:"Names and addresses are easy for scammers to find. It doesn’t prove anything."}
+    ]}]
+},
+{ id:"phone-scripts", section:"learn", kind:"lesson", title:"The most common phone scams",
+  lead:"Point at (or tap) each card to hear what the scammer typically says, and the truth behind it.",
+  body:() => `
+  <div class="cards">
+    <div class="card" tabindex="0" data-tip-title="The truth" data-tip="The IRS, Social Security and Medicare contact you by mail first. They never threaten immediate arrest and never ask for gift cards, crypto or wire transfers."><h3><span class="icon-dot">${icon("bank")}</span>Government imposter</h3><p>“This is Social Security. Your number has been suspended and there’s a warrant for your arrest.”</p><span class="hint">${icon("cursor")}Point here for the truth</span></div>
+    <div class="card" tabindex="0" data-tip-title="The truth" data-tip="Hang up and call your grandchild or their parents on the number you already have. Agree on a family code word that a real relative would know."><h3><span class="icon-dot">${icon("family")}</span>Grandparent emergency</h3><p>“Grandma, it’s me. I’m in jail. Please don’t tell Mom.”</p><span class="hint">${icon("cursor")}Point here for the truth</span></div>
+    <div class="card" tabindex="0" data-tip-title="The truth" data-tip="Microsoft, Apple and other tech companies don’t call you about viruses. Never let a caller control your computer."><h3><span class="icon-dot">${icon("laptop")}</span>Tech support</h3><p>“This is Microsoft. Your computer is sending us virus alerts. Let me connect to fix it.”</p><span class="hint">${icon("cursor")}Point here for the truth</span></div>
+    <div class="card" tabindex="0" data-tip-title="The truth" data-tip="Your bank will never ask you to move money to a “safe account”, read out a code, or hand cash or cards to a courier."><h3><span class="icon-dot">${icon("shield")}</span>Bank “fraud department”</h3><p>“We see suspicious charges. Move your money to a safe account and read me the code we texted.”</p><span class="hint">${icon("cursor")}Point here for the truth</span></div>
+    <div class="card" tabindex="0" data-tip-title="The truth" data-tip="You never have to pay to receive a real prize. If you didn’t enter, you didn’t win."><h3><span class="icon-dot">${icon("trophy")}</span>Prize or lottery</h3><p>“Congratulations, you’ve won $2.5 million! Just pay the taxes and fees first.”</p><span class="hint">${icon("cursor")}Point here for the truth</span></div>
+    <div class="card" tabindex="0" data-tip-title="The truth" data-tip="Utility companies send written notices before cutting service. Call the number on your bill to check."><h3><span class="icon-dot">${icon("bolt")}</span>Utility shut-off</h3><p>“Your power will be cut off in one hour unless you pay right now.”</p><span class="hint">${icon("cursor")}Point here for the truth</span></div>
+  </div>`,
+  quizzes:[{ id:"q-scripts", concept:"action",
+    q:"A caller who sounds just like your grandson says he’s in jail and begs you not to tell his parents. What’s the best thing to do?",
+    options:[
+      {t:"Send the money quickly, then tell his parents later", ok:false, why:"Money sent by gift card, wire or cash courier is almost impossible to get back. Check first."},
+      {t:"Hang up and call your grandson, or his parents, on the number you already have", ok:true, why:"Yes. The voice can be faked, but calling the real person can’t. In almost every case, the grandchild is safe at home."},
+      {t:"Ask the caller to prove who he is", ok:false, why:"Scammers are good at answering questions and may know family details from social media. Calling the real person is much safer."}
+    ]}]
+},
+{ id:"phone-flags", section:"learn", kind:"lesson", title:"Red flags on a phone call",
+  lead:"If you hear any of these on a call, hang up. Point at each one to learn more.",
+  body:() => `
+  <ul class="checklist">
+    <li tabindex="0" data-tip="“You must act today.” “This offer ends in an hour.” Real organizations give you time to think.">${icon("clock")}<div><strong>Pressure to act right now</strong><span>Deadlines and rushing</span></div></li>
+    <li tabindex="0" data-tip="Arrest, lawsuits, losing your benefits, deportation or a closed account. Threats are meant to scare you into obeying.">${icon("alert")}<div><strong>Threats</strong><span>Arrest, fines, account closed</span></div></li>
+    <li tabindex="0" data-tip="“Don’t tell your family.” “Don’t tell the bank teller why you’re taking out money.” Secrecy keeps anyone from warning you.">${icon("hush")}<div><strong>Asking you to keep it secret</strong><span>Even from family or the bank</span></div></li>
+    <li tabindex="0" data-tip="Gift cards, wire transfers, cryptocurrency, Bitcoin ATMs, payment apps, or cash handed to a courier. Real agencies and companies don’t take these.">${icon("gift")}<div><strong>Strange ways to pay</strong><span>Gift cards, wire, crypto, cash courier</span></div></li>
+    <li tabindex="0" data-tip="Passwords, PINs, one-time codes, Social Security or Medicare numbers. A real company that calls you won’t ask for these.">${icon("key")}<div><strong>Asking for codes or passwords</strong><span>Or your Social Security number</span></div></li>
+    <li tabindex="0" data-tip="“Install this app so I can help you.” This gives them control of your computer or phone and your bank accounts.">${icon("laptop")}<div><strong>Asking to install an app</strong><span>Or to “connect to your computer”</span></div></li>
+    <li tabindex="0" data-tip="“Don’t hang up or you’ll lose your money.” They don’t want you to call the real company and find out the truth.">${icon("phone")}<div><strong>Keeping you on the line</strong><span>“Don’t hang up”</span></div></li>
+    <li tabindex="0" data-tip="Prizes you didn’t enter, guaranteed investment returns, surprise refunds. If it sounds too good to be true, it is.">${icon("trophy")}<div><strong>Too good to be true</strong><span>Prizes, refunds, sure-thing investments</span></div></li>
+  </ul>`,
+  quizzes:[{ id:"q-flags", concept:"payment",
+    q:"Which of these is a sure sign that a call is a scam?",
+    options:[
+      {t:"Your doctor’s office calls to confirm your appointment", ok:false, why:"That’s a normal call, as long as they don’t ask for payment details or personal numbers."},
+      {t:"A “government agent” tells you to pay a fine with gift cards", ok:true, why:"Correct. No government agency, utility or real business will ever ask you to pay with gift cards."},
+      {t:"Your bank asks you to come into a branch with your ID", ok:false, why:"Visiting a branch in person is a safe way to deal with your bank."}
+    ]}]
+},
+{ id:"anatomy-email", section:"learn", kind:"anatomy", title:"Anatomy of a scam email",
+  lead:"Here is a typical scam email. Each numbered highlight is a red flag. Point at a highlight (or tap it) to see why it’s a warning sign.",
+  flags:{
+    sender:{concept:"sender", title:"Look-alike sender address", why:"The name says “ShopRight” but the real address is “shopright-orders-help.com”. A real store emails from its own website name."},
+    greet:{concept:"clues", title:"Generic greeting", why:"“Dear Customer” instead of your name. A store you shop with knows your name."},
+    alarm:{concept:"bait", title:"A surprise charge you didn’t make", why:"A big charge you don’t recognize makes you panic, which is the point."},
+    phone:{concept:"impersonation", title:"A phone number that goes to the scammer", why:"This number connects to the scammer, who will ask for your card details or to “connect to your computer” for a refund. Use the number on the real website or your card."},
+    urgent:{concept:"urgency", title:"Deadline", why:"“Within 24 hours” is pressure so you won’t stop to check your real account."}
+  },
+  msg:{ kind:"email",
+    from:"ShopRight Orders <[[sender:service@shopright-orders-help.com]]>",
+    subject:"Your order #SR-88213 has been confirmed",
+    body:[
+      "[[greet:Dear Customer,]]",
+      "Thank you for shopping with us. [[alarm:Your card has been charged $499.99 for: Laptop Pro 15” (Qty 1).]]",
+      "If you did not make this purchase, [[phone:call our billing department at 1-888-555-0107]] to cancel and receive a full refund.",
+      "[[urgent:Cancellations must be made within 24 hours, after which the charge is final.]]",
+      "Thank you,<br>ShopRight Customer Care"
+    ]},
+  quizzes:[{ id:"q-anat-email", concept:"sender",
+    q:"In the email above, the sender’s name shows “ShopRight Orders”, but the address is service@shopright-orders-help.com. What tells you who really sent it?",
+    options:[
+      {t:"The name “ShopRight Orders”", ok:false, why:"Anyone can type any name in the “From” line. The display name proves nothing."},
+      {t:"The part after the @ sign", ok:true, why:"Correct. “shopright-orders-help.com” is not the store’s own website (that would be something like shopright.com). Always look at the full address, especially the part after the @."},
+      {t:"The order number in the subject line", ok:false, why:"Anyone can make up an order number. It looks official but proves nothing."}
+    ]}]
+},
+{ id:"anatomy-text", section:"learn", kind:"anatomy", title:"Anatomy of a scam text",
+  lead:"Scam texts pack several red flags into a few lines. Point at each highlight to see what to look for.",
+  flags:{
+    num:{concept:"sender", title:"Random personal number", why:"Real toll agencies and big companies usually text from short official numbers (5 or 6 digits), and only if you signed up."},
+    amt:{concept:"bait", title:"Small, surprising amount", why:"$4.15 seems too small to worry about, so you pay without thinking. The real goal is your card number."},
+    threat:{concept:"urgency", title:"Threat and deadline", why:"Losing your driver’s license over $4 is not how real agencies work. The threat is meant to scare you."},
+    lnk:{concept:"links", title:"Strange link", why:"“tollpass-pay.info” is not an official website. Government toll sites usually end in “.gov” or “.org” and you can find them yourself."},
+    reply:{concept:"links", title:"“Reply Y to activate the link”", why:"Your phone turns off links from unknown senders to protect you. Replying turns them on and tells the scammer your number is real."}
+  },
+  msg:{ kind:"sms",
+    sender:"[[num:+1 (812) 555-0193]]",
+    bubbles:[
+      "TollPass Notice: [[amt:You have an unpaid toll balance of $4.15.]] [[threat:Pay by today to avoid a $50 late fee and suspension of your driver’s license.]]",
+      "[[lnk>https://tollpass-pay.info/us|https://tollpass-pay.info/us]]",
+      "[[reply:Reply Y, then reopen this message to activate the link.]]"
+    ]},
+  quizzes:[{ id:"q-anat-text", concept:"links",
+    q:"Phones often show only part of a web address. What is the safest way to check a delivery or bill that came by text?",
+    options:[
+      {t:"Tap the link and look at the website carefully", ok:false, why:"Fake websites can look exactly like real ones, and just visiting some sites can be risky."},
+      {t:"Open the company’s official app, or type its website yourself, and look up your account there", ok:true, why:"Right. When you go there yourself, the scammer’s link never gets a chance."},
+      {t:"Reply to the text asking for more details", ok:false, why:"Replying confirms your number to scammers and invites more messages."}
+    ]}]
+},
+{ id:"links", section:"learn", kind:"lesson", title:"How to read a web address",
+  lead:"Scammers build web addresses that contain a real company’s name but belong to someone else. Here’s how to find the real owner.",
+  body:() => `
+  <h2>The real owner is just before the first single slash</h2>
+  <div class="url-box"><span class="url"><span class="u-dim">https://</span><span class="u-dim">login.</span><span class="u-own">northgatebank.com</span><span class="u-dim">/account</span></span>
+    <div class="url-legend"><span><i style="background:var(--good-soft);box-shadow:inset 0 -3px 0 var(--good)"></i>Owner: Northgate Bank</span><span>Anything before it (like “login.”) is just a label the owner chose.</span></div></div>
+  <div class="url-box"><span class="url"><span class="u-dim">https://</span><span class="u-fake">northgatebank.com.</span><span class="u-bad">secure-check.net</span><span class="u-dim">/login</span></span>
+    <div class="url-legend"><span><i style="background:var(--bad-soft);box-shadow:inset 0 -3px 0 var(--bad)"></i>Owner: secure-check.net (not the bank!)</span><span><i style="background:var(--flag-soft)"></i>The bank’s name is just a decoy label</span></div></div>
+  <h2>Who really owns these? Point at each one</h2>
+  <div class="urlrows">
+    <div class="urlrow" tabindex="0" data-tip-title="Safe" data-tip="Owner: northgatebank.com. This is the real bank’s website."><span class="mono">www.northgatebank.com/login</span></div>
+    <div class="urlrow" tabindex="0" data-tip-title="Fake" data-tip="Owner: northgate-bank-alerts.com. Extra words joined with dashes make a completely different website."><span class="mono">northgate-bank-alerts.com</span></div>
+    <div class="urlrow" tabindex="0" data-tip-title="Fake" data-tip="Owner: n0rthgatebank.com. The letter “o” was swapped for the number zero."><span class="mono">n0rthgatebank.com</span></div>
+    <div class="urlrow" tabindex="0" data-tip-title="Fake" data-tip="Owner: northgatebank.co. Missing the “m”. Look-alike endings like .co, .net or .top are common tricks."><span class="mono">northgatebank.co/verify</span></div>
+  </div>
+  <h2>Try it: hover before you click</h2>
+  <div class="demo">
+    <div class="demo-body"><p>On a computer, rest your mouse on a link <b>without clicking</b>. The real address appears at the bottom of the window. Try it on this button (or tap it):</p>
+    <span class="fakebtn" tabindex="0" data-url="http://northgate-verify.co/secure/login.php">Sign in to Northgate Bank</span></div>
+    <div class="statusbar">Point at the button to see where it really goes</div>
+  </div>`,
+  quizzes:[{ id:"q-links", concept:"links",
+    q:"Northgate Bank’s real website is northgatebank.com. Which of these addresses really belongs to the bank?",
+    options:[
+      {t:"northgatebank.com.secure-login.net", ok:false, why:"The owner is “secure-login.net”. The bank’s name at the front is a decoy."},
+      {t:"northgate-bank-support.com", ok:false, why:"Extra words with dashes make a different website that anyone could buy."},
+      {t:"www.northgatebank.com/help", ok:true, why:"Correct. Right before the first single slash is “northgatebank.com”, the real bank."}
+    ]}]
+},
+{ id:"rules", section:"learn", kind:"lesson", title:"Four habits that beat almost every scam",
+  lead:"You don’t need to memorize every scam. These four habits protect you from nearly all of them.",
+  body:() => `
+  <div class="rules">
+    <div class="rule"><span class="word">Stop</span><p>Don’t click, reply, pay or give information. Hang up. A real problem can wait ten minutes.</p></div>
+    <div class="rule"><span class="word">Check</span><p>Contact the company yourself using a number from your card, a bill or the official website, never the one in the message.</p></div>
+    <div class="rule"><span class="word">Talk</span><p>Tell a family member or friend. Scammers want secrecy; a second opinion breaks the spell.</p></div>
+    <div class="rule"><span class="word">Report</span><p>Reporting helps stop scammers and can help you recover money if you lost any.</p></div>
+  </div>
+  <h2>Where to report (in the US)</h2>
+  <div class="report">
+    <div class="report-row"><b>Any scam or fraud</b><span>Federal Trade Commission: <span class="mono">ReportFraud.ftc.gov</span></span></div>
+    <div class="report-row"><b>Scam text messages</b><span>Forward the text to <span class="mono">7726</span></span></div>
+    <div class="report-row"><b>Phishing emails</b><span>Forward to <span class="mono">reportphishing@apwg.org</span></span></div>
+    <div class="report-row"><b>Free help line for anyone</b><span>AARP Fraud Watch Network: <span class="mono">877-908-3360</span></span></div>
+    <div class="report-row"><b>If you sent money</b><span>Call your bank or card company right away, using the number on your card.</span></div>
+  </div>
+  <p class="empty">Outside the US, contact your national fraud reporting center and your bank.</p>
+  <div class="note">${icon("family")}<p><b>Family code word:</b> agree on a secret word with your family. If someone calls claiming to be a relative in trouble, ask for the word.</p></div>`,
+  quizzes:[{ id:"q-rules", concept:"action",
+    q:"You get a frightening call saying your bank account has been hacked. What’s the safest move?",
+    options:[
+      {t:"Do what the caller says to protect your money", ok:false, why:"If the caller is a scammer, following instructions is exactly how money is stolen."},
+      {t:"Hang up and call the number on the back of your bank card", ok:true, why:"Yes. Stop, then check with your bank directly. If there’s a real problem, the bank will help you."},
+      {t:"Give them only the last four digits of your card", ok:false, why:"Don’t give any details on a call you didn’t make. Hang up and call your bank yourself."}
+    ]}]
+},
+/* ---------------------------------------------------------------- PRACTICE */
+{ id:"practice-intro", section:"practice", kind:"lesson", title:"Now it’s your turn",
+  lead:"In the practice section you’ll see realistic emails, texts, chat messages and phone call transcripts. Your job is to find the red flags.",
+  body:() => `
+  <div class="cards">
+    <div class="card"><h3><span class="icon-dot">${icon("cursor")}</span>Click what looks wrong</h3><p>Click or tap any part of the message you think is a red flag: a word, a sentence, the sender, a link.</p></div>
+    <div class="card"><h3><span class="icon-dot">${icon("check")}</span>See if you’re right</h3><p>A correct find turns <b>green</b> with a number and an explanation. If that part is fine, we’ll tell you why.</p></div>
+    <div class="card"><h3><span class="icon-dot">${icon("eye")}</span>Stuck? Ask for help</h3><p>Press <b>Show me the red flags</b> to see everything you missed. Red flags found after that don’t count toward your score.</p></div>
+    <div class="card"><h3><span class="icon-dot">${icon("star")}</span>Scoring</h3><p>You get a point for each red flag you find and each question you answer correctly. Clicking safe parts doesn’t cost points, so take your time.</p></div>
+  </div>
+  <div class="note">${icon("link")}<p>Links in the practice messages don’t go anywhere. Point at them to see the hidden address, just like on a real computer.</p></div>`
+},
+{ id:"p-bank", section:"practice", kind:"spot", title:"A bank security email",
+  scenario:"You bank with Northgate Bank. This email arrives early one morning.",
+  flags:{
+    sender:{concept:"sender", title:"Fake sender address", why:"The name says “Northgate Bank” but the address ends in “northgate-secure-alerts.com”. Real bank emails come from the bank’s own website name (northgatebank.com)."},
+    greet:{concept:"clues", title:"Generic greeting", why:"“Dear Valued Customer”: your bank knows your name and normally uses it."},
+    typo:{concept:"clues", title:"Spelling and grammar mistakes", why:"“recieve” and “you’re account” are mistakes a real bank’s email team would catch."},
+    urgent:{concept:"urgency", title:"Threat with a deadline", why:"“Within 24 hours … permanently closed” is pressure to make you act before you think."},
+    link:{concept:"links", title:"Button goes to a fake website", why:"The button says “Verify My Account” but the address underneath is northgate-verify.co. Always point at a link before clicking."},
+    info:{concept:"info", title:"Asks for private information", why:"No bank will ever ask you to confirm your full card number, PIN and Social Security number online."}
+  },
+  msg:{ kind:"email",
+    from:"Northgate Bank Security <[[sender:security@northgate-secure-alerts.com]]>",
+    subject:"{{Unusual sign-in activity detected|A security-sounding subject line alone isn’t proof either way. Look at the sender and what the email asks you to do.}}",
+    body:[
+      "[[greet:Dear Valued Customer,]]",
+      "{{We detected an unusual sign-in attempt on your online banking from a device in another country.|Banks really do send sign-in alerts, so this sentence alone isn’t a red flag. What matters is what they ask you to do next.}} For your protection, we have temporarily limited your account.",
+      "To restore full access, you must verify your identity. [[typo:If we do not recieve your confirmation]] [[urgent:within 24 hours, your account will be permanently closed.]]",
+      {button:"[[link>Verify My Account|http://northgate-verify.co/login]]"},
+      "You will be asked to confirm [[info:your full card number, PIN and Social Security number]] to complete the process.",
+      "Thank you for keeping [[typo:you’re account]] safe.<br>{{Northgate Bank Security Team|A sign-off with the company name is easy to fake, so it doesn’t tell you much either way.}}"
+    ],
+    foot:"{{© 2026 Northgate Bank. Member FDIC. All rights reserved.|Copying a legal footer costs scammers nothing. It doesn’t prove the email is real, but it isn’t a red flag either.}}"
+  }
+},
+{ id:"p-delivery", section:"practice", kind:"spot", title:"A delivery text",
+  scenario:"You’re at home and this text pops up on your phone.",
+  flags:{
+    num:{concept:"sender", title:"Strange sender number", why:"This is an overseas number (+63 is the Philippines). Delivery companies text from short official numbers, and only when you’ve signed up."},
+    addr:{concept:"bait", title:"A surprise problem", why:"Were you even expecting a package? Scammers send this to millions of people, knowing many are waiting for a delivery."},
+    urg:{concept:"urgency", title:"Short deadline", why:"“Within 12 hours or it will be returned” is meant to rush you."},
+    lnk:{concept:"links", title:"Fake website address", why:"“quickship-redeliver.top” isn’t the company’s website. The “.top” ending and added words are big warning signs."},
+    fee:{concept:"payment", title:"Small fee to get your card number", why:"A $1.25 fee seems harmless, but the goal is your full card details, which they’ll use for much bigger charges."},
+    reply:{concept:"links", title:"Asks you to reply to turn on the link", why:"Your phone disables links from unknown senders. Replying turns them on and tells scammers your number is active."}
+  },
+  msg:{ kind:"sms",
+    sender:"[[num:+63 917 555 0148]]",
+    bubbles:[
+      "QuickShip: Your package {{#QS48201|A tracking number looks official, but anyone can make one up. It isn’t one of the main red flags here.}} is on hold [[addr:due to an incomplete address.]] [[urg:Update within 12 hours or it will be returned to sender.]]",
+      "[[lnk>https://quickship-redeliver.top/us|https://quickship-redeliver.top/us]] [[fee:A $1.25 redelivery fee applies.]]",
+      "[[reply:Reply Y and reopen this message to activate the link.]]"
+    ]}
+},
+{ id:"p-boss", section:"practice", kind:"spot", title:"An email from the boss",
+  scenario:"You work in the office at Brightwell Supplies. Margaret Chen is the company’s CEO. This email arrives at 9:05 on a Monday.",
+  flags:{
+    sender:{concept:"sender", title:"Personal email for company business", why:"The CEO would use the company address (@brightwellsupplies.com), not a free Gmail account anyone could create."},
+    busy:{concept:"secrecy", title:"Blocks you from checking", why:"“Can’t take calls today” stops you from confirming the request by phone or in person."},
+    gift:{concept:"payment", title:"Gift card purchase", why:"Real companies don’t pay clients or suppliers with gift cards bought by staff. Gift cards are a scammer’s favorite, because they can’t be traced."},
+    codes:{concept:"payment", title:"Send photos of the codes", why:"Once someone has the codes, the money is spent within minutes and can’t be refunded."},
+    rush:{concept:"urgency", title:"Within the hour", why:"A tight deadline leaves no time to ask anyone else."},
+    secret:{concept:"secrecy", title:"Keep it between us", why:"Asking you to keep it secret stops coworkers from warning you."}
+  },
+  msg:{ kind:"email",
+    from:"Margaret Chen <[[sender:margaret.chen.ceo@gmail.com]]>",
+    subject:"{{Quick favor|A short, casual subject line is common in both real and fake emails.}}",
+    body:[
+      "{{Hi Daniel,|Using your name makes it feel real. Scammers find staff names on company websites and LinkedIn. That’s what makes it spear phishing, but the greeting alone isn’t the clue here.}}",
+      "[[busy:Are you at your desk? I’m in back-to-back meetings and can’t take calls today.]]",
+      "I need you to [[gift:purchase 6 gift cards at $250 each]] for a client appreciation surprise. [[codes:Scratch off the backs and email me photos of the codes]] [[rush:within the next hour.]]",
+      "[[secret:Please keep this between us for now. I want it to be a surprise.]] {{I’ll pay you back by the end of the day.|A promise to repay you sounds reassuring, but it isn’t the key warning sign here. Look at how they want to be paid and who sent it.}}",
+      "Thanks,<br>Margaret<br>{{Sent from my iPhone|Many real emails end this way. It isn’t a red flag on its own.}}"
+    ]}
+},
+{ id:"p-chat", section:"practice", kind:"spot", title:"A message on a chat app",
+  scenario:"You have two grown children. This message appears in your chat app from a number you don’t know.",
+  flags:{
+    unknown:{concept:"sender", title:"Unknown number", why:"The app itself warns you this number isn’t in your contacts. Treat it as a stranger until you’ve checked."},
+    noname:{concept:"impersonation", title:"Never says who they are", why:"They say “Mum” but never give a name, so you fill in the blank with whichever child you think it is."},
+    newnum:{concept:"impersonation", title:"The “new number” story", why:"“I lost my phone, this is my new number” is the classic opening of this scam."},
+    delete:{concept:"secrecy", title:"Delete the old number", why:"This stops you from calling the real number to check. Scammers want to cut off the way you’d find out."},
+    pay:{concept:"payment", title:"Urgent request for money", why:"Asking for money right after a “new number” message is the heart of this scam."},
+    acct:{concept:"payment", title:"The account isn’t your child’s", why:"The money goes to “J. Rivera Holdings”, a stranger’s account. Your real child would use their own account."},
+    call:{concept:"secrecy", title:"Won’t talk on the phone", why:"They avoid calls because you would hear that it isn’t your child."}
+  },
+  msg:{ kind:"chat",
+    sender:"+1 (305) 555-0172",
+    banner:"[[unknown:This number is not in your contacts.]]",
+    bubbles:[
+      "[[noname:Hi Mum, it’s me 😊]]",
+      "[[newnum:I dropped my phone in the sink, this is my new number.]] [[delete:Save this one and delete the old number.]]",
+      {out:true, t:"Oh no! Are you okay?"},
+      "{{Yes fine, just stressed.|Sounding stressed is natural and isn’t a clue by itself.}} I have a bill due today and my banking app is locked on the new phone. [[pay:Could you pay it for me? It’s $780, I’ll pay you back tomorrow ❤️]]",
+      "[[acct:Name: J. Rivera Holdings · Account ending 5530]]",
+      "[[call:Can’t talk right now, the mic on this phone isn’t working. Text only pls]]"
+    ]}
+},
+{ id:"p-safe", section:"practice", kind:"quizset", title:"Scam or safe?",
+  lead:"Not every message is a scam. Decide whether each one is safe or a scam.",
+  quizzes:[
+    { id:"q-ss-pharmacy", concept:"action", label:"Message 1",
+      mock:{kind:"sms", sender:"72384", bubbles:["Main Street Pharmacy: Your prescription is ready for pickup at our Elm Ave location. Questions? Call the number on your prescription label. Reply STOP to opt out."]},
+      context:"You use Main Street Pharmacy and are waiting for a refill.",
+      q:"Is this message safe or a scam?",
+      options:[
+        {t:"Safe", ok:true, why:"It doesn’t ask for information, money or a click, and it tells you to use a number you already have. That’s what a normal notice looks like."},
+        {t:"Scam", ok:false, why:"This one is fine. There’s no link, no deadline, no request for money or details, and you’re a real customer who expects it."}
+      ]},
+    { id:"q-ss-stream", concept:"links", label:"Message 2",
+      mock:{kind:"email", from:"StreamBox Billing <billing@streambox-accounts.net>", subject:"Payment declined: account on hold", body:["We couldn’t process your last payment. Update your billing details within 48 hours to keep watching:", "<span class=\"lnk\">streambox-account-update.net/billing</span>"]},
+      q:"Is this message safe or a scam?",
+      options:[
+        {t:"Safe", ok:false, why:"Look closer: the sender and the link use look-alike websites, and there’s a deadline. Check by opening the StreamBox app yourself."},
+        {t:"Scam", ok:true, why:"Right. A look-alike sender, a strange link and a deadline. If you’re worried, open the app or type the real website yourself."}
+      ]},
+    { id:"q-ss-code", concept:"action", label:"Message 3",
+      mock:{kind:"sms", sender:"55021", bubbles:["Northgate Bank: Your sign-in code is 482910. It expires in 10 minutes. We will never call or text to ask for this code."]},
+      context:"You just tried to sign in to your Northgate Bank app.",
+      q:"Is this message safe or a scam?",
+      options:[
+        {t:"Safe", ok:true, why:"You asked for this code, there’s no link, and it warns you never to share it. Use it to sign in, and never read it to anyone."},
+        {t:"Scam", ok:false, why:"This one is real: you just requested it, and it has no link or request. The danger comes if someone asks you to share it."}
+      ]},
+    { id:"q-ss-codecall", concept:"info", label:"Message 4",
+      mock:{kind:"call", callerId:"Northgate Bank", lines:[{who:"Caller", t:"Hi, this is the Northgate Bank security team. To confirm your identity, please read me the 6-digit code we just sent you."}]},
+      context:"Five minutes later, your phone rings.",
+      q:"Is this call safe or a scam?",
+      options:[
+        {t:"Safe", ok:false, why:"The text itself said the bank will never ask for the code. Anyone asking for it is trying to get into your account."},
+        {t:"Scam", ok:true, why:"Correct. A real bank will never ask you to read out a code. Hang up and call the number on your card."}
+      ]}
+  ]
+},
+{ id:"p-grandparent", section:"practice", kind:"spot", title:"A call from a “grandson”",
+  scenario:"Your phone rings late in the evening. Here is what was said. Click on each line that contains a red flag.",
+  flags:{
+    guess:{concept:"impersonation", title:"Makes you say the name", why:"He doesn’t say his name, hoping you’ll say “Michael, is that you?” Then he becomes Michael. AI can even make the voice sound right."},
+    excuse:{concept:"impersonation", title:"Excuse for the wrong voice", why:"A cold or a broken nose explains why he doesn’t sound like himself."},
+    crisis:{concept:"urgency", title:"Shocking emergency", why:"An accident and jail create fear, and love makes you want to help immediately."},
+    secret:{concept:"secrecy", title:"Don’t tell Mom and Dad", why:"Secrecy stops you from calling his parents, who would tell you he’s safe at home."},
+    lawyer:{concept:"impersonation", title:"A second “official” joins", why:"Handing the phone to a “lawyer” or “officer” adds authority and makes the story feel real."},
+    cash:{concept:"payment", title:"Cash picked up by a courier", why:"Courts don’t send couriers to collect bail. Once cash is handed over, it’s gone."},
+    today:{concept:"urgency", title:"Within two hours", why:"The tight deadline is meant to stop you from checking with anyone."},
+    gag:{concept:"secrecy", title:"A fake “gag order”", why:"There’s no rule that stops you talking to your own family or bank. It’s meant to stop the bank teller from warning you."}
+  },
+  msg:{ kind:"call",
+    callerId:"{{Unknown number|An unknown number isn’t proof of a scam, but it’s a reason to stay alert.}}",
+    lines:[
+      {who:"You", t:"{{Hello?|This is you answering. Nothing wrong here.}}"},
+      {who:"Caller", t:"[[guess:Grandma? It’s me… your favorite grandson.]]"},
+      {who:"You", t:"{{Michael? You sound different.|This is your reply. Notice how the caller got you to say his name.}}"},
+      {who:"Caller", t:"[[excuse:I have a cold, and my nose got hurt in the accident.]] [[crisis:I was in a car crash and the police arrested me. I’m in jail right now.]]"},
+      {who:"Caller", t:"[[secret:Please, please don’t tell Mom and Dad. They’ll be so angry.]] [[lawyer:My lawyer is here, he’ll explain.]]"},
+      {who:"“Lawyer”", t:"{{Ma’am, this is attorney Robert Klein. Your grandson needs $9,000 for bail.|The polite, professional tone is part of the act, but the big clues are in what he asks you to do.}} [[cash:You’ll need to withdraw cash. A courier will come to your house to collect it]] [[today:within two hours.]]"},
+      {who:"“Lawyer”", t:"[[gag:There’s a gag order on this case, so you can’t discuss it with anyone, including the bank.]]"}
+    ]}
+},
+{ id:"p-bankcall", section:"practice", kind:"spot", title:"A call from the “fraud department”",
+  scenario:"Your phone shows that your bank is calling. Here is the call. Click each part that’s a red flag, including anything on the screen.",
+  flags:{
+    spoof:{concept:"impersonation", title:"Caller ID can be faked", why:"Scammers can make any name and number appear, even your bank’s real number. Caller ID proves nothing."},
+    charge:{concept:"urgency", title:"Scary surprise charge", why:"A big charge you didn’t make is meant to rattle you so you follow instructions."},
+    code:{concept:"info", title:"Asks for your one-time code", why:"That code is the key to your account. The scammer is probably signing in as you at that very moment."},
+    move:{concept:"payment", title:"Move money to a “safe account”", why:"There’s no such thing. A real bank protects your account itself; it never asks you to move your money."},
+    line:{concept:"secrecy", title:"Don’t hang up", why:"They don’t want you to hang up and call your bank on the number on your card, which is exactly what you should do."},
+    teller:{concept:"secrecy", title:"Tells you to lie to the bank", why:"Anyone who coaches you to give bank staff a false reason is a scammer, every time."}
+  },
+  msg:{ kind:"call",
+    callerId:"[[spoof:Northgate Bank · 1-800-555-0199]]",
+    lines:[
+      {who:"Caller", t:"{{Hello, this is Kevin from the Northgate Bank fraud department.|Real banks do have fraud teams, and a name is easy to invent. Judge the call by what they ask you to do.}}"},
+      {who:"Caller", t:"[[charge:We’ve stopped a suspicious charge of $1,249 at an electronics store in Miami. Did you make this purchase?]]"},
+      {who:"You", t:"{{No! I didn’t.|This is your reply. Nothing wrong here.}}"},
+      {who:"Caller", t:"{{Don’t worry, I’ll help you.|Sounding helpful and calm is part of the act, but it isn’t a red flag on its own.}} [[code:To verify it’s you, please read me the 6-digit code we just texted you.]]"},
+      {who:"Caller", t:"[[move:Your account has been compromised. To protect your savings, we need to move them into a new secure account we’ve set up for you.]]"},
+      {who:"Caller", t:"[[line:Don’t hang up. If the call drops, the hackers could empty your account.]]"},
+      {who:"Caller", t:"[[teller:If the teller asks why you’re moving the money, just say it’s for a home renovation. Some bank employees are under investigation.]]"}
+    ]}
+},
+{ id:"p-refund", section:"practice", kind:"spot", title:"A tax refund email",
+  scenario:"You filed your taxes months ago. This email shows up in your inbox.",
+  flags:{
+    sender:{concept:"sender", title:"Government look-alike address", why:"Real US government emails end in “.gov”. “tax-refund-gov.org” is just a website anyone can buy."},
+    bait:{concept:"bait", title:"Unexpected money", why:"A surprise refund is bait. Tax agencies don’t email you out of the blue about refunds."},
+    greet:{concept:"clues", title:"Generic greeting", why:"“Dear Taxpayer” instead of your name."},
+    att:{concept:"links", title:"Dangerous attachment", why:"An attachment ending in “.html”, “.zip” or “.exe” can open a fake login page or install harmful software. Don’t open attachments you didn’t expect."},
+    bank:{concept:"info", title:"Asks for bank details", why:"They want your account and routing numbers. That’s enough to take money, not give it."},
+    deadline:{concept:"urgency", title:"Deadline", why:"“Within 3 days” pushes you to act before checking."}
+  },
+  msg:{ kind:"email",
+    from:"Tax Refund Services <[[sender:refunds@tax-refund-gov.org]]>",
+    subject:"[[bait:You are eligible for a tax refund of $847.20]]",
+    body:[
+      "[[greet:Dear Taxpayer,]]",
+      "{{After the annual calculation of your fiscal activity, we have determined that you are eligible to receive a tax refund.|Stiff, formal wording is common in scams, but it isn’t one of the main red flags here.}}",
+      "Please download and complete the attached form. [[bank:You will need to enter your bank account and routing number so we can deposit your refund.]]",
+      "[[deadline:Refunds not claimed within 3 days will be cancelled.]]",
+      "{{Refund Department|A department name is easy to make up. It doesn’t prove anything either way.}}"
+    ],
+    attach:"[[att:Refund_Form_2026.html]]"
+  }
+},
+{ id:"p-what", section:"practice", kind:"quizset", title:"What would you do?",
+  lead:"Choose the best response to each situation.",
+  quizzes:[
+    { id:"q-wd-popup", concept:"action", label:"Situation 1",
+      mock:{kind:"popup", title:"Security Alert", body:["<strong>WARNING! Your computer is infected with 5 viruses.</strong>", "Your files and banking information are at risk. Call Windows Support immediately at <b>1-888-555-0143</b>. Do not close this window."]},
+      context:"This appears on your computer while you’re reading the news, with a loud beeping sound.",
+      q:"What should you do?",
+      options:[
+        {t:"Call the number right away", ok:false, why:"The number goes to scammers who will ask to control your computer and then charge you, or steal from your bank."},
+        {t:"Close the browser. If it won’t close, restart the computer", ok:true, why:"Right. These pop-ups are fake. Closing the browser or restarting makes them go away. Real virus warnings never include a phone number."},
+        {t:"Click OK to start the virus scan", ok:false, why:"Clicking anything on the pop-up can download harmful software. Close the browser instead."}
+      ]},
+    { id:"q-wd-ssa", concept:"impersonation", label:"Situation 2",
+      mock:{kind:"call", callerId:"Social Security Admin", lines:[{who:"Recording", t:"This is Officer Hayes with Social Security. Your Social Security number has been suspended due to suspicious activity. Press 1 to speak with an agent, or a warrant will be issued for your arrest."}]},
+      q:"What’s true about this call?",
+      options:[
+        {t:"Press 1 to sort it out quickly", ok:false, why:"Pressing 1 connects you to a scammer and tells them your number works."},
+        {t:"It’s a scam. Social Security numbers can’t be “suspended”, and the agency doesn’t threaten arrest. Hang up", ok:true, why:"Correct. Government agencies don’t make threatening robocalls. If you’re worried, call Social Security on its official number."},
+        {t:"Read them your Social Security number so they can check it", ok:false, why:"Never give your Social Security number to someone who calls you."}
+      ]},
+    { id:"q-wd-prize", concept:"bait", label:"Situation 3",
+      mock:{kind:"call", callerId:"Prize Center", lines:[{who:"Caller", t:"Congratulations! You’ve won $2.5 million and a new car in the National Sweepstakes! To release your prize, you just need to pay $499 in taxes and fees with gift cards today."}]},
+      q:"What should you do?",
+      options:[
+        {t:"Pay the $499. It’s small compared to the prize", ok:false, why:"There is no prize. After the first payment they’ll ask for more, and more."},
+        {t:"Hang up. You never have to pay to collect a real prize", ok:true, why:"Correct. Real prizes don’t require fees, and gift cards are a scam payment. If you didn’t enter, you didn’t win."},
+        {t:"Ask them to take the fees out of the winnings", ok:false, why:"They’ll have an excuse ready. There are no winnings. Just hang up."}
+      ]}
+  ]
+},
+{ id:"p-final", section:"practice", kind:"quizset", title:"Final check",
+  lead:"Three last questions before your results.",
+  quizzes:[
+    { id:"q-fin-crypto", concept:"bait", label:"Question 1",
+      mock:{kind:"chat", sender:"Jenny", bubbles:["Good morning dear! ☀️ Did you sleep well?", "I made $4,200 this week on my crypto trading app. My uncle is an expert and shows me what to buy. I could show you too, it’s very safe 😊"]},
+      context:"Jenny texted you by “wrong number” three weeks ago. You’ve chatted every day since, but never met or spoken on the phone.",
+      q:"What is most likely happening?",
+      options:[
+        {t:"A new friend sharing good luck", ok:false, why:"Weeks of friendly chat followed by an investment offer is the pattern of a very costly scam."},
+        {t:"An investment scam. Stop contact and never send money to someone you’ve only met online", ok:true, why:"Correct. This is “pig butchering”. The trading app is fake; the profits you see on screen can’t be taken out."},
+        {t:"Fine, as long as you start with a small amount", ok:false, why:"Small investments often “grow” on screen to tempt you into sending much more. You won’t be able to withdraw any of it."}
+      ]},
+    { id:"q-fin-never", concept:"payment", label:"Question 2",
+      q:"Which of these will a real bank, government agency or company NEVER ask you to do?",
+      options:[
+        {t:"Sign in through their official app or website", ok:false, why:"That’s normal, as long as you open the app or type the website yourself."},
+        {t:"Pay with gift cards, or move your money to a “safe account”", ok:true, why:"Correct. These are always scams, no matter who seems to be asking."},
+        {t:"Visit a branch or office with your ID", ok:false, why:"That’s a normal, safe request."}
+      ]},
+    { id:"q-fin-oops", concept:"action", label:"Question 3",
+      q:"Oops! You clicked a link and typed your bank password on a fake website. What should you do first?",
+      options:[
+        {t:"Wait and see if anything happens", ok:false, why:"Scammers act fast. Every minute counts."},
+        {t:"Call your bank on the number on your card, and change your password on the real website", ok:true, why:"Right. Your bank can watch for or block suspicious activity. Also change the password anywhere else you used it, and report it."},
+        {t:"Reply to the email and ask them to delete your information", ok:false, why:"That only tells the scammer you’re paying attention. Contact your bank directly."}
+      ]}
+  ]
+},
+{ id:"results", section:"results", kind:"results", title:"Your results" }
+];
+
+/* ================= state ================= */
+const STORE = "spot-the-scam-v1";
+let state = { idx:0, quiz:{}, spot:{}, scale:1 };
+try { const s = JSON.parse(localStorage.getItem(STORE) || "null"); if (s && typeof s === "object") state = Object.assign(state, s); } catch (e) {}
+const save = () => { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {} };
+let savedIdx = state.idx;
+state.idx = 0;
+
+const QUIZ = {};
+SLIDES.forEach(s => (s.quizzes || []).forEach(q => { QUIZ[q.id] = q; }));
+const LEARN = SLIDES.filter(s => s.section === "learn");
+const PRACTICE = SLIDES.filter(s => s.section === "practice");
+const idxOf = id => SLIDES.findIndex(s => s.id === id);
+const spotState = id => (state.spot[id] ||= { found:[], misses:0, revealed:false });
+const lastFb = {};
+let ctxs = {};
+
+/* ================= message rendering ================= */
+const TOKEN = /\[\[(\w+)([:>])([^\]|]+)(?:\|([^\]]+))?\]\]|\{\{([^|}]+)\|([^}]+)\}\}/g;
+
+function numbering(slide) {
+  const keys = Object.keys(slide.flags || {});
+  const map = {};
+  if (slide.kind === "anatomy") { keys.forEach((k, i) => map[k] = i + 1); return map; }
+  const st = spotState(slide.id);
+  st.found.forEach((k, i) => map[k] = i + 1);
+  if (st.revealed) keys.filter(k => !st.found.includes(k)).forEach((k, i) => map[k] = st.found.length + i + 1);
+  return map;
+}
+
+// ctx: null (static), or {mode:"learn"|"play", slide, segs:[], nums}
+function segs(str, ctx) {
+  let out = "", last = 0;
+  const neutral = text => {
+    if (!text) return "";
+    // allow simple inline HTML authored in data (<br>, <b>, <span class="lnk">)
+    if (ctx && ctx.mode === "play" && text.replace(/<[^>]+>/g, "").trim()) {
+      const k = ctx.segs.push({ flag:null, ok:null }) - 1;
+      return `<span class="seg" data-k="${k}" tabindex="0" role="button">${text}</span>`;
+    }
+    return text;
+  };
+  str.replace(TOKEN, (m, fk, kind, ftxt, url, otxt, owhy, off) => {
+    out += neutral(str.slice(last, off));
+    last = off + m.length;
+    if (otxt !== undefined) { // explained neutral segment
+      if (ctx && ctx.mode === "play") {
+        const k = ctx.segs.push({ flag:null, ok:owhy }) - 1;
+        out += `<span class="seg" data-k="${k}" tabindex="0" role="button">${otxt}</span>`;
+      } else out += otxt;
+      return m;
+    }
+    const isLink = kind === ">";
+    const urlAttr = isLink ? ` data-url="${esc(url || ftxt)}"` : "";
+    const lcls = isLink ? " lnk" : "";
+    if (!ctx) { out += isLink ? `<span class="lnk">${ftxt}</span>` : ftxt; return m; }
+    const f = ctx.slide.flags[fk];
+    if (!f) { out += ftxt; return m; }
+    const n = ctx.nums[fk];
+    if (ctx.mode === "learn") {
+      out += `<span class="seg shown${lcls}" data-flag="${fk}" data-n="${n}" tabindex="0" data-tip-title="${esc(n + ". " + f.title)}" data-tip="${esc(f.why)}"${urlAttr}>${ftxt}</span>`;
+    } else {
+      const st = spotState(ctx.slide.id);
+      const k = ctx.segs.push({ flag:fk, ok:null }) - 1;
+      const found = st.found.includes(fk);
+      const cls = found ? " found" : (st.revealed ? " missed" : "");
+      const tipAttrs = (found || st.revealed) ? ` data-tip-title="${esc(n + ". " + f.title)}" data-tip="${esc(f.why)}"` : "";
+      out += `<span class="seg${cls}${lcls}" data-k="${k}" data-flag="${fk}"${n ? ` data-n="${n}"` : ""} tabindex="0" role="button"${tipAttrs}${urlAttr}>${ftxt}</span>`;
+    }
+    return m;
+  });
+  out += neutral(str.slice(last));
+  return out;
+}
+
+function renderMsg(msg, ctx) {
+  const P = s => segs(s, ctx);
+  const play = ctx && ctx.mode === "play" ? " play" : "";
+  if (msg.kind === "email") {
+    const body = msg.body.map(p => typeof p === "string" ? `<p>${P(p)}</p>` : `<p><span class="fakebtn">${P(p.button)}</span></p>`).join("");
+    return `<div class="mock email${play}">
+      <div class="mock-label"><span>${icon("mail")} Email</span><span>Today, 7:42 AM</span></div>
+      <div class="eh"><span class="lab">From</span><span>${P(msg.from)}</span>
+        <span class="lab">To</span><span>you@example.com</span>
+        <span class="lab">Subject</span><span class="subj">${P(msg.subject)}</span></div>
+      <div class="email-body">${body}
+        ${msg.attach ? `<p><span class="attach">${icon("clip")}${P(msg.attach)}</span></p>` : ""}
+        ${msg.foot ? `<p class="email-foot">${P(msg.foot)}</p>` : ""}</div>
+      ${ctx ? `<div class="statusbar">Point at a link to see where it really goes</div>` : ""}
+    </div>`;
+  }
+  if (msg.kind === "sms" || msg.kind === "chat") {
+    const bubbles = msg.bubbles.map(b => typeof b === "string" ? `<div class="bub in">${P(b)}</div>` : `<div class="bub ${b.out ? "out" : "in"}">${P(b.t)}</div>`).join("");
+    return `<div class="mock phone ${msg.kind}${play}">
+      <div class="phone-top"><span class="avatar">${icon(msg.kind === "chat" ? "person" : "sms")}</span>
+        <div class="phone-sender">${P(msg.sender)}</div><small>${msg.kind === "chat" ? "Chat app" : "Text message"}</small></div>
+      <div class="phone-body"><span class="when">Today 9:14 AM</span>
+        ${msg.banner ? `<div class="chat-banner">${P(msg.banner)}</div>` : ""}${bubbles}</div>
+      ${ctx ? `<div class="statusbar">Point at a link to see where it really goes</div>` : ""}
+    </div>`;
+  }
+  if (msg.kind === "call") {
+    const lines = msg.lines.map(l => `<li class="line ${l.who === "You" ? "you" : "caller"}"><span class="who">${l.who}</span><p>${P(l.t)}</p></li>`).join("");
+    return `<div class="mock call${play}">
+      <div class="call-top"><span class="call-avatar">${icon("phone")}</span><div class="call-id">${P(msg.callerId)}</div><small>Phone call · transcript</small></div>
+      <ol class="transcript">${lines}</ol></div>`;
+  }
+  if (msg.kind === "popup") {
+    return `<div class="mock popup"><div class="popup-bar">${icon("alert")}${msg.title}</div>
+      <div class="popup-body">${msg.body.map(p => `<p>${p}</p>`).join("")}<span class="fakebtn">OK</span></div></div>`;
+  }
+  return "";
+}
+
+/* ================= components ================= */
+function renderQuiz(q, compact) {
+  const a = state.quiz[q.id];
+  const answered = a !== undefined && a !== null;
+  const opts = q.options.map((o, i) => {
+    let cls = "";
+    if (answered) { if (o.ok) cls = "right"; else if (i === a) cls = "wrong"; }
+    return `<button type="button" class="opt ${cls}" data-q="${q.id}" data-o="${i}" ${answered ? "disabled" : ""}>
+      <span class="letter">${answered && o.ok ? icon("check") : answered && i === a ? icon("x") : "ABCD"[i]}</span><span>${o.t}</span></button>`;
+  }).join("");
+  let fb = "";
+  if (answered) {
+    const chosen = q.options[a], right = q.options.find(o => o.ok);
+    fb = chosen.ok
+      ? `<div class="fbcard good"><span class="fbi">${icon("check")}</span><div><strong>Correct!</strong><p>${chosen.why}</p></div></div>`
+      : `<div class="fbcard bad"><span class="fbi">${icon("x")}</span><div><strong>Not quite.</strong><p>${chosen.why}</p><p><b>Best answer:</b> ${right.t}. ${right.why}</p></div></div>`;
+  }
+  return `<div class="quiz" id="quiz-${q.id}">
+    <p class="q-label">${icon("star")}${q.label || "Quick check"}</p>
+    ${q.context ? `<p class="q-context">${q.context}</p>` : ""}
+    ${q.mock ? renderMsg(q.mock, null) : ""}
+    <h3 class="q">${q.q}</h3>
+    <div class="opts">${opts}</div>
+    <div class="qfb" aria-live="polite">${fb}</div>
+  </div>`;
+}
+
+function renderSpotPanel(s) {
+  const st = spotState(s.id);
+  const keys = Object.keys(s.flags);
+  const total = keys.length, got = st.found.length;
+  const missed = st.revealed ? keys.filter(k => !st.found.includes(k)) : [];
+  const dots = keys.map((_, i) => `<span class="dot ${i < got ? "on" : (st.revealed ? "miss" : "")}"></span>`).join("");
+  let items = st.found.map((k, i) => `<li data-flag="${k}"><span class="num">${i + 1}</span><div><strong>${s.flags[k].title}</strong><p>${s.flags[k].why}</p></div></li>`).join("");
+  items += missed.map((k, i) => `<li class="miss" data-flag="${k}"><span class="num">${got + i + 1}</span><div><strong>${s.flags[k].title}<span class="tag">Missed</span></strong><p>${s.flags[k].why}</p></div></li>`).join("");
+  if (!st.revealed) for (let i = got; i < total; i++) items += `<li class="todo"><span class="num">?</span><span>Not found yet</span></li>`;
+  let fb = lastFb[s.id];
+  if (!fb) {
+    if (got === total) fb = `<div class="fbcard good"><span class="fbi">${icon("trophy")}</span><div><strong>You found every red flag!</strong><p>Great eye. Press Next to continue.</p></div></div>`;
+    else if (st.revealed) fb = `<div class="fbcard"><span class="fbi">${icon("eye")}</span><div><strong>All red flags are showing</strong><p>Orange highlights are the ones you missed. Point at any highlight to read why.</p></div></div>`;
+    else fb = `<div class="fbcard"><span class="fbi">${icon("cursor")}</span><div><strong>Find ${total} red flags</strong><p>Click or tap on anything in the ${s.msg.kind === "call" ? "call" : "message"} that looks suspicious.</p></div></div>`;
+  }
+  return `<div class="panel">
+    <div class="tally"><strong>Red flags found: ${got} of ${total}</strong><div class="dots" aria-hidden="true">${dots}</div></div>
+    <div class="fb" aria-live="polite">${fb}</div>
+    <ol class="flaglist">${items}</ol>
+    <div class="btn-row"><button type="button" class="btn" data-act="reveal" ${st.revealed || got === total ? "disabled" : ""}>${icon("eye")}Show me the red flags</button></div>
+  </div>`;
+}
+
+/* ================= slide rendering ================= */
+const stage = $("#stage");
+
+function slideHead(s) {
+  let eb;
+  if (s.section === "learn") eb = `<span class="pill">Lesson ${LEARN.indexOf(s) + 1} of ${LEARN.length}</span>`;
+  else if (s.section === "practice") eb = `<span class="pill">Practice ${PRACTICE.indexOf(s) + 1} of ${PRACTICE.length}</span>`;
+  else eb = `<span class="pill">Finished</span>`;
+  return `<div class="slide-head"><p class="eyebrow">${eb}</p><h1>${s.title}</h1>${s.lead ? `<p class="lead">${s.lead}</p>` : ""}</div>`;
+}
+
+function renderSlide(keepScroll) {
+  const s = SLIDES[state.idx];
+  const top = stage.scrollTop;
+  ctxs = {};
+  let html = slideHead(s);
+  if (s.kind === "lesson") {
+    const aside = s.quizzes ? `<aside>${s.quizzes.map(q => renderQuiz(q)).join("")}</aside>` : "";
+    html += `<div class="lesson${aside ? " has-aside" : ""}"><div class="prose">${s.body()}</div>${aside}</div>`;
+  } else if (s.kind === "anatomy") {
+    const ctx = ctxs[s.id] = { mode:"learn", slide:s, segs:[], nums:numbering(s) };
+    const legend = Object.entries(s.flags).map(([k, f], i) => `<li tabindex="0" data-flag="${k}"><span class="num">${i + 1}</span><div><strong>${f.title}</strong><p>${f.why}</p></div></li>`).join("");
+    html += `<div class="lesson has-aside"><div class="prose">${renderMsg(s.msg, ctx)}
+      <div class="panel"><h2>What to look for</h2><ol class="legend">${legend}</ol></div></div>
+      <aside>${s.quizzes.map(q => renderQuiz(q)).join("")}</aside></div>`;
+  } else if (s.kind === "spot") {
+    const ctx = ctxs[s.id] = { mode:"play", slide:s, segs:[], nums:numbering(s) };
+    html += `<div class="scenario">${icon("info")}<p>${s.scenario}</p></div>
+      <div class="practice"><div>${renderMsg(s.msg, ctx)}</div>${renderSpotPanel(s)}</div>`;
+  } else if (s.kind === "quizset") {
+    html += `<div class="quizgrid">${s.quizzes.map(q => renderQuiz(q)).join("")}</div>`;
+  } else if (s.kind === "results") {
+    html += renderResults();
+  }
+  stage.innerHTML = `<div class="slide gut"><div class="wrap">${html}</div></div>`;
+  if (s.id === "welcome") renderResume();
+  stage.scrollTop = keepScroll ? top : 0;
+  updateChrome();
+}
+
+function renderResume() {
+  const box = $("#resumeBox");
+  if (!box) return;
+  const answered = Object.keys(state.quiz).length + Object.keys(state.spot).length;
+  if (savedIdx > 0 && savedIdx < SLIDES.length && answered) {
+    box.innerHTML = `<div class="note">${icon("redo")}<div style="display:grid;gap:.6rem"><p><b>Welcome back!</b> You stopped at “${SLIDES[savedIdx].title}”.</p>
+      <div class="btn-row"><button type="button" class="btn solid" data-act="goto" data-id="${SLIDES[savedIdx].id}">Continue where I left off</button></div></div></div>`;
+  }
+}
+
+/* ================= results ================= */
+function tally() {
+  const c = {}; Object.keys(CONCEPTS).forEach(k => c[k] = { earned:0, possible:0 });
+  const lessonQ = [0, 0], pracQ = [0, 0], flags = [0, 0];
+  let misses = 0, attempted = 0;
+  SLIDES.forEach(s => {
+    (s.quizzes || []).forEach(q => {
+      const a = state.quiz[q.id];
+      const ok = a !== undefined && a !== null && q.options[a].ok;
+      if (a !== undefined && a !== null) attempted++;
+      c[q.concept].possible++; if (ok) c[q.concept].earned++;
+      const b = s.section === "learn" ? lessonQ : pracQ; b[1]++; if (ok) b[0]++;
+    });
+    if (s.kind === "spot") {
+      const st = state.spot[s.id] || { found:[], misses:0 };
+      if (st.found.length || st.revealed || st.misses) attempted++;
+      Object.entries(s.flags).forEach(([k, f]) => {
+        c[f.concept].possible++; flags[1]++;
+        if (st.found.includes(k)) { c[f.concept].earned++; flags[0]++; }
+      });
+      misses += st.misses || 0;
+    }
+  });
+  const earned = lessonQ[0] + pracQ[0] + flags[0], possible = lessonQ[1] + pracQ[1] + flags[1];
+  return { c, lessonQ, pracQ, flags, misses, earned, possible, attempted, pct: possible ? Math.round(earned / possible * 100) : 0 };
+}
+
+function renderResults() {
+  const t = tally();
+  const R = 52, C = 2 * Math.PI * R;
+  let headline, msg;
+  if (t.pct >= 85) { headline = "Excellent! You have a sharp eye for scams."; msg = "You spotted most of the tricks scammers use. Share what you’ve learned with friends and family."; }
+  else if (t.pct >= 65) { headline = "Good work. You’re well on your way."; msg = "You caught many of the warning signs. Look over the topics below marked for review, then try the practice again."; }
+  else { headline = "A good start. Practice makes perfect."; msg = "Every scam you learn to recognize is one you won’t fall for. Review the lessons below and try the practice again."; }
+  if (!t.attempted) { headline = "You haven’t answered any questions yet."; msg = "Go back through the lessons and practice, then return here for your score."; }
+  const rows = Object.entries(t.c).filter(([, v]) => v.possible).map(([k, v]) => ({ k, ...v, pct: Math.round(v.earned / v.possible * 100) }));
+  const strong = rows.filter(r => r.pct >= 80).sort((a, b) => b.pct - a.pct);
+  const weak = rows.filter(r => r.pct < 80).sort((a, b) => a.pct - b.pct);
+  const row = r => {
+    const lvl = r.pct >= 80 ? "" : r.pct >= 60 ? "mid" : "low";
+    const label = r.pct >= 80 ? "Strong" : r.pct >= 60 ? "Getting there" : "Review";
+    const btns = r.pct < 80 ? `<div class="btn-row">${CONCEPTS[r.k].lessons.map(id => `<button type="button" class="btn" data-act="goto" data-id="${id}">${icon("book")}Review: ${SLIDES[idxOf(id)].title}</button>`).join("")}</div>` : "";
+    return `<div class="crow ${lvl}"><div class="crow-top"><b>${CONCEPTS[r.k].name}</b><span><span class="status">${label}</span> ${r.earned} of ${r.possible}</span></div>
+      <div class="bar"><i style="width:${r.pct}%"></i></div><p>${CONCEPTS[r.k].about}</p>${btns}</div>`;
+  };
+  return `
+  <div class="score-hero">
+    <svg class="ring" viewBox="0 0 128 128" role="img" aria-label="Score ${t.pct} percent">
+      <circle class="track" cx="64" cy="64" r="${R}"/><circle class="val" cx="64" cy="64" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - t.pct / 100)).toFixed(1)}"/>
+      <text x="64" y="64">${t.pct}%</text></svg>
+    <div class="score-copy"><h2>${headline}</h2><p>${msg}</p><p class="where">You earned ${t.earned} of ${t.possible} points.</p></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>${t.lessonQ[0]} / ${t.lessonQ[1]}</b><span>Lesson questions correct</span></div>
+    <div class="stat"><b>${t.flags[0]} / ${t.flags[1]}</b><span>Red flags found</span></div>
+    <div class="stat"><b>${t.pracQ[0]} / ${t.pracQ[1]}</b><span>Practice questions correct</span></div>
+    <div class="stat"><b>${t.misses}</b><span>Safe parts clicked by mistake</span></div>
+  </div>
+  <div class="res-cols">
+    <div class="res-group"><h2>${icon("check")}What you understand well</h2>${strong.length ? strong.map(row).join("") : `<p class="empty">Nothing here yet. Keep practicing!</p>`}</div>
+    <div class="res-group"><h2>${icon("book")}Worth reviewing</h2>${weak.length ? weak.map(row).join("") : `<p class="empty">Nothing to review. You did well in every topic!</p>`}</div>
+  </div>
+  <div class="res-cols">
+    <div class="res-group"><h2>${icon("shield")}Remember the four habits</h2>
+      <div class="rules"><div class="rule"><span class="word">Stop</span></div><div class="rule"><span class="word">Check</span></div><div class="rule"><span class="word">Talk</span></div><div class="rule"><span class="word">Report</span></div></div></div>
+    <div class="res-group"><h2>${icon("redo")}Try again</h2>
+      <div class="btn-row"><button type="button" class="btn solid" data-act="retry">Redo the practice section</button>
+      <button type="button" class="btn" data-act="restart">Start over from the beginning</button></div>
+      <div id="confirmBox"></div></div>
+  </div>`;
+}
+
+/* ================= interactions ================= */
+function go(i) {
+  if (i < 0 || i >= SLIDES.length) return;
+  stopSpeech(); hideTip();
+  if (i > 0) savedIdx = 0;
+  state.idx = i; save(); renderSlide(false);
+  stage.focus({ preventScroll:true });
+}
+
+function answerQuiz(qid, o) {
+  if (state.quiz[qid] !== undefined && state.quiz[qid] !== null) return;
+  state.quiz[qid] = o; save();
+  const q = QUIZ[qid];
+  const el = $("#quiz-" + qid);
+  if (el) {
+    const btn = el.querySelector(`[data-o="${o}"]`);
+    if (btn) popAt(btn, q.options[o].ok, q.options[o].ok ? "Correct!" : "Not quite");
+    el.outerHTML = renderQuiz(q);
+    const fb = $("#quiz-" + qid + " .qfb");
+    if (fb && fb.getBoundingClientRect().bottom > window.innerHeight - 80) fb.scrollIntoView({ block:"nearest", behavior:"smooth" });
+  }
+  updateChrome();
+}
+
+function spotClick(el) {
+  const s = SLIDES[state.idx];
+  const ctx = ctxs[s.id];
+  if (!ctx) return;
+  const k = +el.dataset.k;
+  const seg = ctx.segs[k];
+  const st = spotState(s.id);
+  const total = Object.keys(s.flags).length;
+  if (st.revealed || st.found.length === total) {
+    if (el.dataset.tip) showTip(el);
+    else lastFb[s.id] = `<div class="fbcard"><span class="fbi">${icon("info")}</span><div><strong>This part is fine</strong><p>${seg.ok || "That part of the message isn’t one of the red flags."}</p></div></div>`;
+    if (!el.dataset.tip) refreshSpot(k);
+    return;
+  }
+  if (seg.flag) {
+    const f = s.flags[seg.flag];
+    if (st.found.includes(seg.flag)) {
+      lastFb[s.id] = `<div class="fbcard"><span class="fbi">${icon("info")}</span><div><strong>You already found this one</strong><p>${f.title}. Keep looking for the others.</p></div></div>`;
+    } else {
+      st.found.push(seg.flag);
+      const n = st.found.length;
+      const done = n === total;
+      popAt(el, true, `Red flag! ${f.title}`);
+      lastFb[s.id] = `<div class="fbcard good"><span class="fbi">${icon("check")}</span><div><strong>Yes! Red flag #${n}: ${f.title}</strong><p>${f.why}</p>${done ? `<p><b>You found all ${total}!</b> Great eye. Press Next to continue.</p>` : ""}</div></div>`;
+    }
+  } else {
+    st.misses = (st.misses || 0) + 1;
+    popAt(el, false, "Not a red flag");
+    lastFb[s.id] = `<div class="fbcard bad"><span class="fbi">${icon("x")}</span><div><strong>Not a red flag</strong><p>${seg.ok || "That part looks normal. Keep looking. Check who it’s really from, any links, deadlines or threats, and what they want you to do or pay."}</p></div></div>`;
+    el.classList.add("flash");
+  }
+  save();
+  const flashed = !seg.flag;
+  setTimeout(() => refreshSpot(k), flashed ? 450 : 0);
+}
+
+function refreshSpot(k) {
+  renderSlide(true);
+  const el = stage.querySelector(`[data-k="${k}"]`);
+  if (el) el.focus({ preventScroll:true });
+}
+
+function popAt(el, ok, text) {
+  const r = el.getBoundingClientRect();
+  const p = document.createElement("div");
+  p.className = "pop" + (ok ? "" : " bad");
+  p.innerHTML = icon(ok ? "check" : "x") + `<span>${esc(text)}</span>`;
+  const x = Math.min(Math.max(r.left + Math.min(r.width, 300) / 2, 120), window.innerWidth - 120);
+  p.style.left = x + "px";
+  p.style.top = Math.max(r.top, 50) + "px";
+  document.body.appendChild(p);
+  setTimeout(() => p.remove(), 2000);
+}
+
+stage.addEventListener("click", e => {
+  const opt = e.target.closest(".opt");
+  if (opt && !opt.disabled) { answerQuiz(opt.dataset.q, +opt.dataset.o); return; }
+  const seg = e.target.closest(".play .seg[data-k]");
+  if (seg) { if (seg.dataset.url) setStatus(seg, true); spotClick(seg); return; }
+  const act = e.target.closest("[data-act]");
+  if (act) { doAct(act); return; }
+  const urlEl = e.target.closest("[data-url]");
+  if (urlEl) setStatus(urlEl, true);
+});
+
+function doAct(btn) {
+  const a = btn.dataset.act;
+  const s = SLIDES[state.idx];
+  if (a === "reveal") { spotState(s.id).revealed = true; delete lastFb[s.id]; save(); renderSlide(true); }
+  else if (a === "goto") go(idxOf(btn.dataset.id));
+  else if (a === "retry") {
+    PRACTICE.forEach(p => { delete state.spot[p.id]; delete lastFb[p.id]; (p.quizzes || []).forEach(q => delete state.quiz[q.id]); });
+    save(); go(idxOf("practice-intro"));
+  }
+  else if (a === "restart") {
+    $("#confirmBox").innerHTML = `<div class="confirm"><span>This erases all your answers. Are you sure?</span>
+      <button type="button" class="btn solid" data-act="confirm-restart">Yes, start over</button><button type="button" class="btn" data-act="cancel-restart">Cancel</button></div>`;
+  }
+  else if (a === "confirm-restart") { state.quiz = {}; state.spot = {}; Object.keys(lastFb).forEach(k => delete lastFb[k]); save(); go(0); }
+  else if (a === "cancel-restart") { $("#confirmBox").innerHTML = ""; }
+}
+
+/* status bar for links */
+function setStatus(el, on) {
+  const box = el.closest(".mock, .demo");
+  const bar = box && box.querySelector(".statusbar");
+  if (!bar) return;
+  if (on) { bar.textContent = "This link really goes to:  " + el.dataset.url; bar.classList.add("on"); }
+  else { bar.textContent = box.classList.contains("demo") ? "Point at the button to see where it really goes" : "Point at a link to see where it really goes"; bar.classList.remove("on"); }
+}
+
+/* tooltips */
+const tip = $("#tip");
+let tipOwner = null;
+function showTip(el) {
+  const t = el.dataset.tip; if (!t) return;
+  const title = el.dataset.tipTitle;
+  tip.innerHTML = (title ? `<strong>${esc(title)}</strong>` : "") + `<span>${esc(t)}</span>`;
+  tip.hidden = false;
+  const r = el.getBoundingClientRect();
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
+  const x = Math.min(Math.max(12, r.left + Math.min(r.width, 400) / 2 - tw / 2), window.innerWidth - tw - 12);
+  let y = r.top - th - 10;
+  if (y < 8) y = r.bottom + 10;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+  tipOwner = el;
+}
+function hideTip() { tip.hidden = true; tipOwner = null; }
+
+document.addEventListener("pointerover", e => {
+  const u = e.target.closest && e.target.closest("[data-url]");
+  if (u) setStatus(u, true);
+  const li = e.target.closest && e.target.closest(".legend li[data-flag], .flaglist li[data-flag]");
+  if (li) $$(`.seg[data-flag="${li.dataset.flag}"]`, stage).forEach(s => s.classList.add("lit"));
+  if (e.pointerType !== "mouse") return;
+  const el = e.target.closest && e.target.closest("[data-tip]");
+  if (el && el !== tipOwner) showTip(el);
+});
+document.addEventListener("pointerout", e => {
+  const u = e.target.closest && e.target.closest("[data-url]");
+  if (u && !u.contains(e.relatedTarget)) setStatus(u, false);
+  const li = e.target.closest && e.target.closest(".legend li[data-flag], .flaglist li[data-flag]");
+  if (li && !li.contains(e.relatedTarget)) $$(".seg.lit", stage).forEach(s => s.classList.remove("lit"));
+  const el = e.target.closest && e.target.closest("[data-tip]");
+  if (el && el === tipOwner && !el.contains(e.relatedTarget)) hideTip();
+});
+document.addEventListener("focusin", e => {
+  const el = e.target.closest && e.target.closest("[data-tip]");
+  if (el) showTip(el); else hideTip();
+  const li = e.target.closest && e.target.closest(".legend li[data-flag]");
+  $$(".seg.lit", stage).forEach(s => s.classList.remove("lit"));
+  if (li) $$(`.seg[data-flag="${li.dataset.flag}"]`, stage).forEach(s => s.classList.add("lit"));
+});
+document.addEventListener("click", e => {
+  // tap support for touch screens
+  const el = e.target.closest("[data-tip]");
+  if (el) { if (tipOwner === el && e.pointerType !== "mouse" && !el.closest(".play")) hideTip(); else showTip(el); }
+  else if (!e.target.closest("#tip")) hideTip();
+});
+stage.addEventListener("scroll", hideTip, { passive:true });
+window.addEventListener("resize", hideTip);
+
+document.addEventListener("keydown", e => {
+  if (!$("#drawer").hidden) { if (e.key === "Escape") closeToc(); return; }
+  const seg = e.target.closest && e.target.closest(".play .seg[data-k], .fakebtn[data-url], [data-tip][tabindex]");
+  if (seg && (e.key === "Enter" || e.key === " ")) {
+    e.preventDefault();
+    if (seg.matches(".play .seg[data-k]")) spotClick(seg);
+    else if (seg.dataset.url) setStatus(seg, true);
+    else showTip(seg);
+    return;
+  }
+  if (e.key === "Escape") hideTip();
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  if (e.key === "ArrowRight") { e.preventDefault(); go(state.idx + 1); }
+  if (e.key === "ArrowLeft") { e.preventDefault(); go(state.idx - 1); }
+});
+
+/* ================= chrome: nav, progress, toc, text size, speech ================= */
+const backBtn = $("#back"), nextBtn = $("#next");
+backBtn.innerHTML = icon("left") + "Back";
+$("#brandMark").innerHTML = icon("shield");
+$("#openToc").innerHTML = icon("list") + `<span class="lbl">All slides</span>`;
+backBtn.addEventListener("click", () => go(state.idx - 1));
+nextBtn.addEventListener("click", () => go(state.idx + 1));
+
+function slideDone(s) {
+  if (s.kind === "spot") { const st = state.spot[s.id]; return !!st && (st.revealed || st.found.length === Object.keys(s.flags).length); }
+  if (s.quizzes) return s.quizzes.every(q => state.quiz[q.id] !== undefined && state.quiz[q.id] !== null);
+  return false;
+}
+
+function updateChrome() {
+  const s = SLIDES[state.idx];
+  const i = state.idx;
+  backBtn.disabled = i === 0;
+  nextBtn.hidden = i === SLIDES.length - 1;
+  const nextS = SLIDES[i + 1];
+  let label = "Next";
+  if (i === 0) label = "Start";
+  else if (nextS && nextS.kind === "results") label = "See my score";
+  else if (nextS && nextS.id === "practice-intro") label = "Start practice";
+  nextBtn.innerHTML = label + icon("right");
+  const where = s.section === "learn" ? `Lesson ${LEARN.indexOf(s) + 1} of ${LEARN.length}` : s.section === "practice" ? `Practice ${PRACTICE.indexOf(s) + 1} of ${PRACTICE.length}` : "Your results";
+  $("#where").textContent = where;
+  $("#bar").style.width = (i / (SLIDES.length - 1) * 100) + "%";
+  const scored = s.kind === "spot" || s.kind === "quizset" || !!s.quizzes;
+  $("#navHint").textContent = scored && !slideDone(s) ? "You can skip and come back to this later" : "Tip: you can also use the arrow keys";
+  document.title = "Spot the Scam";
+}
+
+function renderToc() {
+  const group = (title, list) => `<h3>${title}</h3><ul class="toc">${list.map(s => {
+    const i = SLIDES.indexOf(s);
+    const done = slideDone(s);
+    return `<li><button type="button" data-goto="${i}" ${i === state.idx ? 'aria-current="true"' : ""}><span class="st ${done ? "done" : ""}">${done ? icon("check") : ""}</span><span>${s.title}</span></button></li>`;
+  }).join("")}</ul>`;
+  $("#tocBody").innerHTML = group("Part 1 · Learn", LEARN) + group("Part 2 · Practice", PRACTICE) + group("Finish", SLIDES.filter(s => s.section === "results"));
+}
+function openToc() { renderToc(); $("#drawer").hidden = false; $("#closeToc").focus(); }
+function closeToc() { $("#drawer").hidden = true; $("#openToc").focus(); }
+$("#openToc").addEventListener("click", openToc);
+$("#closeToc").addEventListener("click", closeToc);
+$("#drawer").addEventListener("click", e => {
+  const b = e.target.closest("[data-goto]");
+  if (b) { $("#drawer").hidden = true; go(+b.dataset.goto); return; }
+  if (e.target.id === "drawer") closeToc();
+});
+
+const SCALES = [0.9, 1, 1.15, 1.3, 1.5];
+function applyScale() {
+  if (!SCALES.includes(state.scale)) state.scale = 1;
+  document.documentElement.style.setProperty("--scale", state.scale);
+  $("#smaller").disabled = state.scale === SCALES[0];
+  $("#bigger").disabled = state.scale === SCALES[SCALES.length - 1];
+}
+$("#smaller").addEventListener("click", () => { state.scale = SCALES[Math.max(0, SCALES.indexOf(state.scale) - 1)]; applyScale(); save(); });
+$("#bigger").addEventListener("click", () => { state.scale = SCALES[Math.min(SCALES.length - 1, SCALES.indexOf(state.scale) + 1)]; applyScale(); save(); });
+
+const speakBtn = $("#speak");
+const canSpeak = "speechSynthesis" in window && typeof SpeechSynthesisUtterance !== "undefined";
+function setSpeakBtn(on) {
+  speakBtn.setAttribute("aria-pressed", on ? "true" : "false");
+  speakBtn.innerHTML = icon(on ? "stop" : "speaker") + `<span class="lbl">${on ? "Stop reading" : "Read aloud"}</span>`;
+}
+function stopSpeech() { if (canSpeak) { try { speechSynthesis.cancel(); } catch (e) {} } setSpeakBtn(false); }
+if (canSpeak) {
+  speakBtn.hidden = false; setSpeakBtn(false);
+  speakBtn.addEventListener("click", () => {
+    if (speakBtn.getAttribute("aria-pressed") === "true") { stopSpeech(); return; }
+    const text = (stage.innerText || "").replace(/\s+\n/g, "\n").slice(0, 6000);
+    try {
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.9;
+      u.onend = u.onerror = () => setSpeakBtn(false);
+      speechSynthesis.cancel(); speechSynthesis.speak(u); setSpeakBtn(true);
+    } catch (e) { setSpeakBtn(false); }
+  });
+}
+
+applyScale();
+renderSlide(false);
+</script>
+</body>
+</html>

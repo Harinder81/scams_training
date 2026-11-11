@@ -1,0 +1,15 @@
+[project]
+name = "scams-training"
+version = "1.0.0"
+description = "Spot the Scam: an interactive course for recognizing phishing, smishing, chat-app and phone scams."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+build = "scams_training.cli:build"
+serve = "scams_training.cli:serve"
+
+[build-system]
+requires = ["uv_build>=0.8,<0.13"]
+build-backend = "uv_build"
