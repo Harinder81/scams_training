@@ -149,6 +149,14 @@ aside{display:grid;gap:1.25rem;min-width:0}
 .checklist strong{display:block}
 .checklist span{color:var(--muted);font-size:.92rem}
 
+.compare{display:grid;gap:.9rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr))}
+.compare-col{border-radius:.9rem;padding:1rem 1.1rem;border:2px solid;display:grid;gap:.5rem;align-content:start}
+.compare-col h3{font-size:1.05rem;display:flex;gap:.5rem;align-items:center}
+.compare-col ul{margin:0;padding-left:1.2rem;display:grid;gap:.4rem}
+.compare-col.risky{background:var(--bad-soft);border-color:var(--bad)}
+.compare-col.risky h3{color:var(--bad)}
+.compare-col.safer{background:var(--good-soft);border-color:var(--good)}
+.compare-col.safer h3{color:var(--good)}
 .rules{display:grid;gap:.9rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr))}
 .rule{background:var(--surface);border:1px solid var(--line);border-radius:.9rem;padding:1.1rem;display:grid;gap:.4rem;align-content:start}
 .rule .word{font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--primary);letter-spacing:-.01em}
@@ -459,7 +467,8 @@ const CONCEPTS = {
   clues:{name:"Small clues: greetings and spelling", about:"Generic greetings like “Dear Customer” and spelling mistakes.", lessons:["anatomy-email"]},
   action:{name:"Knowing what to do next", about:"Stop, check with the real company yourself, talk to someone, and report it.", lessons:["rules","phishing"]},
   travelStreet:{name:"Travel: taxis, touts and friendly strangers", about:"In-person tricks abroad: fake officials at stations, “your hotel is closed”, commission shops, free gifts and fake guides.", lessons:["travel-transport","travel-people"]},
-  travelMoney:{name:"Travel: money, bookings and fake police", about:"Official visa sites, fares agreed in advance, ATMs, short-changing, fake police and “front desk” calls.", lessons:["travel-money","travel-intro"]}
+  travelMoney:{name:"Travel: money, bookings and fake police", about:"Official visa sites, fares agreed in advance, ATMs, short-changing, fake police and “front desk” calls.", lessons:["travel-money","travel-intro"]},
+  travelTheft:{name:"Travel: pickpockets and keeping your things safe", about:"Distraction tricks, carrying valuables safely, and protecting your belongings in your hotel room.", lessons:["travel-theft"]}
 };
 
 /* ================= slides ================= */
@@ -1116,6 +1125,64 @@ const SLIDES = [
       {t:"Hang up and go to the front desk in person, or call the desk yourself", ok:true, why:"Correct. The same rule as at home: hang up, and contact the business yourself."},
       {t:"Give only the last four digits and the security code", ok:false, why:"Don’t give any card details on a call you didn’t make. Go to the desk in person."}
     ]}]
+},
+{ id:"travel-theft", section:"travel", kind:"lesson", title:"Pickpockets and keeping your things safe",
+  lead:"Most theft from travelers isn’t violent. It’s quick, quiet and starts with a distraction. A few simple habits make you a much harder target, on the street and in your hotel.",
+  body:() => `
+  <h2>How pickpockets work</h2>
+  <p>Pickpockets often work in pairs or small groups: one distracts you while another takes your wallet or phone. Point at each trick to see how it works.</p>
+  <div class="cards">
+    <div class="card" tabindex="0" data-tip-title="How it works" data-tip="Someone “accidentally” spills a drink, sauce or bird mess on you and kindly helps wipe it off. While you’re busy, a partner empties your pockets or bag. Thank them, step away, and clean up yourself."><h3><span class="icon-dot">${icon("alert")}</span>The spill</h3><p>“Oh no, something got on your jacket! Let me help.”</p><span class="hint">${icon("cursor")}Point here to see how it works</span></div>
+    <div class="card" tabindex="0" data-tip-title="How it works" data-tip="Crowded buses, train doors, markets and festivals are perfect for pickpockets. A sudden push or bump hides a hand in your pocket. Move your bag to your front before you enter a crowd."><h3><span class="icon-dot">${icon("family")}</span>The crowd and the bump</h3><p>A push while boarding a bus or train, or in a packed market.</p><span class="hint">${icon("cursor")}Point here to see how it works</span></div>
+    <div class="card" tabindex="0" data-tip-title="How it works" data-tip="A map, newspaper or clipboard is held over your table or bag. Underneath, the other hand slides your phone away. Keep your phone in your pocket, not on the table."><h3><span class="icon-dot">${icon("book")}</span>The map or clipboard</h3><p>Someone asks for directions or a signature and holds paper over your table.</p><span class="hint">${icon("cursor")}Point here to see how it works</span></div>
+    <div class="card" tabindex="0" data-tip-title="How it works" data-tip="Thieves on motorbikes grab phones and bags from people walking near the road. Walk facing traffic, carry your bag on the side away from the street, and step back from the curb to use your phone."><h3><span class="icon-dot">${icon("phone")}</span>The roadside grab</h3><p>A phone or bag snatched by someone passing on a motorbike.</p><span class="hint">${icon("cursor")}Point here to see how it works</span></div>
+    <div class="card" tabindex="0" data-tip-title="How it works" data-tip="“You dropped this!” or a group of children crowding around you. The moment your attention is on them, someone reaches for your pocket. Keep a hand on your valuables and keep walking."><h3><span class="icon-dot">${icon("eye")}</span>“You dropped something”</h3><p>Anything that makes you stop, look down or turn around.</p><span class="hint">${icon("cursor")}Point here to see how it works</span></div>
+    <div class="card" tabindex="0" data-tip-title="How it works" data-tip="A bag hung on a chair back or set on the floor beside you can vanish in seconds at a café, station or restaurant. Keep it on your lap, or between your feet with the strap around your leg."><h3><span class="icon-dot">${icon("clock")}</span>The unattended moment</h3><p>A bag on the back of a chair, or a phone left on the table.</p><span class="hint">${icon("cursor")}Point here to see how it works</span></div>
+  </div>
+  <h2>Where to carry your things</h2>
+  <div class="compare">
+    <div class="compare-col risky"><h3>${icon("x")}Easy for thieves</h3><ul>
+      <li>Wallet in a back pocket</li>
+      <li>Backpack on your back in a crowd</li>
+      <li>Open tote bag or bag with an outer pocket facing out</li>
+      <li>Phone in your hand near the road, or on a café table</li>
+      <li>All your cash and cards in one place</li>
+      <li>Passport carried around when you don’t need it</li></ul></div>
+    <div class="compare-col safer"><h3>${icon("check")}Much safer</h3><ul>
+      <li>Money belt or neck pouch <b>under</b> your clothes for passport, spare card and most cash</li>
+      <li>Zipped cross-body bag worn in <b>front</b>, with the zipper against your body</li>
+      <li>Front pocket with only a little cash for the day</li>
+      <li>Backpack worn on your front in crowds and on public transport</li>
+      <li>Cash and cards split between two or three places</li>
+      <li>A photocopy of your passport, with the real one in the hotel safe</li></ul></div>
+  </div>
+  <h2>Keeping things safe in your hotel</h2>
+  <ul class="checklist">
+    <li tabindex="0" data-tip="Put your passport, spare cards, extra cash and jewelry in the room safe, or ask the front desk to keep them in the hotel’s main safe and get a receipt.">${icon("key")}<div><strong>Use the safe</strong><span>Room safe or the front desk safe</span></div></li>
+    <li tabindex="0" data-tip="Laptops, tablets, cameras and chargers left on the bed or desk are tempting. Put them away or lock them in your suitcase when you go out.">${icon("eye")}<div><strong>Keep valuables out of sight</strong><span>Lock your suitcase when you go out</span></div></li>
+    <li tabindex="0" data-tip="Use the deadbolt and door chain or latch whenever you’re inside. A small rubber door wedge or a door-stop alarm adds extra security, especially in simple guesthouses.">${icon("shield")}<div><strong>Lock the door every time</strong><span>Deadbolt and chain when you’re in</span></div></li>
+    <li tabindex="0" data-tip="If someone knocks saying they’re maintenance, room service or staff, and you didn’t ask for them, call the front desk to check before you open the door.">${icon("phone")}<div><strong>Check before you open the door</strong><span>Call the front desk to confirm</span></div></li>
+    <li tabindex="0" data-tip="If the front desk says your room number out loud, quietly ask for a new key and room. Don’t leave your key card in its paper sleeve with the number written on it.">${icon("hush")}<div><strong>Keep your room number private</strong><span>Don’t carry it on the key sleeve</span></div></li>
+    <li tabindex="0" data-tip="Hanging the “Do Not Disturb” sign while you’re out makes the room look occupied. Leaving a light or the TV on helps too.">${icon("clock")}<div><strong>Make the room look occupied</strong><span>“Do Not Disturb” sign when you’re out</span></div></li>
+    <li tabindex="0" data-tip="On overnight trains and buses, lock your bag to the luggage rack or berth with a small cable lock, and keep your valuables pouch on you while you sleep.">${icon("link")}<div><strong>On overnight trains, lock your bag</strong><span>Small cable lock to the rack or berth</span></div></li>
+  </ul>
+  <div class="note">${icon("info")}<p><b>If something is stolen:</b> cancel your cards right away using the phone numbers you saved before the trip, report it to the local police and get a written report for insurance. For a lost passport, contact the nearest U.S. Embassy or Consulate.</p></div>`,
+  quizzes:[
+    { id:"q-tr-spill", concept:"travelTheft",
+      q:"On a busy street, a stranger says something spilled on your jacket and starts helping you wipe it off. What should you do?",
+      options:[
+        {t:"Let them help. It’s kind of them", ok:false, why:"This is a classic distraction. While one person “helps”, a partner takes your wallet, phone or bag."},
+        {t:"Say “No thank you”, hold onto your bag, step away and clean it off yourself somewhere safe", ok:true, why:"Correct. Protect your valuables first, move away from the people around you, then deal with the mess."},
+        {t:"Put your bag down so you can use both hands to clean up", ok:false, why:"Setting your bag down is exactly what the thieves are hoping for."}
+      ]},
+    { id:"q-tr-door", concept:"travelTheft",
+      q:"There’s a knock at your hotel door: “Maintenance, we need to check the air conditioning.” You didn’t report a problem. What should you do?",
+      options:[
+        {t:"Open the door. Hotel staff need to get in sometimes", ok:false, why:"Thieves sometimes pose as hotel staff. If you didn’t ask for anyone, check first."},
+        {t:"Keep the door closed and call the front desk to check", ok:true, why:"Right. If the visit is real, the front desk will confirm it. If not, they’ll send security."},
+        {t:"Open the door with the chain on and ask for ID", ok:false, why:"A uniform or ID badge is easy to fake, and a door chain can be forced. Call the front desk instead."}
+      ]}
+  ]
 },
 { id:"t-station", section:"travel", kind:"spot", title:"At a busy train station",
   scenario:"You arrive at a big railway station in Delhi with a printed train ticket to Agra. As you walk toward the entrance, a man in a neat shirt with a lanyard comes up to you. Click on each part of the conversation that’s a red flag.",

@@ -17,13 +17,14 @@ The course has two tabs. Each has its own lessons, practice, progress and result
   what to review), with buttons that jump back to the matching lessons.
 
 **Travel scams abroad tab**
-- **Learn** (4 lessons): in-person scams that target U.S. travelers in places such as
+- **Learn** (5 lessons): in-person scams that target U.S. travelers in places such as
   India and Pakistan: preparing before you go (official visa sites, STEP, emergency
   numbers), taxi/station/hotel tricks, friendly-stranger, gem and fake-guide scams, and
-  money/ATM/fake-police tricks.
+  money/ATM/fake-police tricks, plus pickpocketing and keeping belongings safe in your
+  hotel room.
 - **Practice** (3 exercises): two click-the-red-flag conversations (a Delhi railway
   station and a Lahore airport taxi) and a "What would you do abroad?" round.
-- **Results**: a score and a breakdown across 2 travel topics, with review links.
+- **Results**: a score and a breakdown across 3 travel topics, with review links.
 
 Made for ease of use: large text and buttons, text-size controls, a read-aloud button,
 hover/tap explanations, keyboard arrows, light and dark mode, and progress saved in the
