@@ -457,7 +457,9 @@ const CONCEPTS = {
   secrecy:{name:"Secrecy and cutting you off", about:"“Don’t tell anyone”, “can’t talk right now”, “stay on the line”.", lessons:["phone-flags","messaging"]},
   bait:{name:"Too good to be true, or a surprise problem", about:"Prizes, refunds and investments, or a problem you never knew you had.", lessons:["phone-scripts","smishing"]},
   clues:{name:"Small clues: greetings and spelling", about:"Generic greetings like “Dear Customer” and spelling mistakes.", lessons:["anatomy-email"]},
-  action:{name:"Knowing what to do next", about:"Stop, check with the real company yourself, talk to someone, and report it.", lessons:["rules","phishing"]}
+  action:{name:"Knowing what to do next", about:"Stop, check with the real company yourself, talk to someone, and report it.", lessons:["rules","phishing"]},
+  travelStreet:{name:"Travel: taxis, touts and friendly strangers", about:"In-person tricks abroad: fake officials at stations, “your hotel is closed”, commission shops, free gifts and fake guides.", lessons:["travel-transport","travel-people"]},
+  travelMoney:{name:"Travel: money, bookings and fake police", about:"Official visa sites, fares agreed in advance, ATMs, short-changing, fake police and “front desk” calls.", lessons:["travel-money","travel-intro"]}
 };
 
 /* ================= slides ================= */
@@ -472,6 +474,8 @@ const SLIDES = [
     <div class="step"><b>Part 1 · Learn</b><span>13 short lessons about the most common scams and their warning signs.</span></div>
     <span class="arr">${icon("arrow")}</span>
     <div class="step"><b>Part 2 · Practice</b><span>Real-looking messages and phone calls. Click on the parts that look wrong.</span></div>
+    <span class="arr">${icon("arrow")}</span>
+    <div class="step"><b>Part 3 · Travel</b><span>In-person scams that target U.S. travelers abroad, such as in India and Pakistan.</span></div>
     <span class="arr">${icon("arrow")}</span>
     <div class="step"><b>Your results</b><span>Your score, what you did well, and which lessons to look at again.</span></div>
   </div>
@@ -1018,6 +1022,182 @@ const SLIDES = [
       ]}
   ]
 },
+/* ---------------------------------------------------------------- TRAVEL (in person, abroad) */
+{ id:"travel-intro", section:"travel", kind:"lesson", title:"Traveling abroad: scams that happen face to face",
+  lead:"Most people you’ll meet in India, Pakistan and elsewhere are honest and generous to visitors. But in busy tourist spots, a few scammers look for travelers who are tired, unsure of prices and too polite to say no.",
+  body:() => `
+  <p>The warning signs are the same ones you’ve already learned: <b>surprise problems, pressure, secrecy and strange ways to pay</b>. The difference is that the scammer is standing in front of you, smiling. Point at each reason below to see why travelers are targets.</p>
+  <div class="chips">
+    <span class="chip" tabindex="0" data-tip-title="Jet lag" data-tip="After a long flight you’re tired and less careful. Many scams happen in the first hours after arriving.">${icon("clock")}Jet lag</span>
+    <span class="chip" tabindex="0" data-tip-title="New money" data-tip="Unfamiliar notes and exchange rates make it hard to tell a fair price from a rip-off, or to notice wrong change.">${icon("money")}New money</span>
+    <span class="chip" tabindex="0" data-tip-title="Not knowing how things work" data-tip="You don’t know which counter is official or what a taxi should cost, so “helpful” strangers seem useful.">${icon("info")}Not knowing how things work</span>
+    <span class="chip" tabindex="0" data-tip-title="Politeness" data-tip="Visitors don’t want to seem rude, so they accept gifts, invitations and help they’d normally refuse.">${icon("family")}Politeness</span>
+  </div>
+  <h2>Before you go</h2>
+  <ul class="checklist">
+    <li tabindex="0" data-tip="The U.S. State Department lists safety information and the current advisory level for every country. Advisory levels change, so check close to your trip.">${icon("shield")}<div><strong>Check the travel advisory</strong><span class="mono">travel.state.gov</span></div></li>
+    <li tabindex="0" data-tip="The free Smart Traveler Enrollment Program lets the U.S. embassy contact you in an emergency and sends you safety alerts.">${icon("bank")}<div><strong>Enroll in STEP</strong><span class="mono">step.state.gov</span></div></li>
+    <li tabindex="0" data-tip="Look-alike visa websites charge large extra fees or steal your passport details. Official sites: indianvisaonline.gov.in for India, visa.nadra.gov.pk for Pakistan.">${icon("link")}<div><strong>Apply for visas only on official sites</strong><span>Not the first ad in your search results</span></div></li>
+    <li tabindex="0" data-tip="So your card isn’t blocked as suspicious. Carry two cards and keep them in different places, in case one is lost or stolen.">${icon("key")}<div><strong>Tell your bank your travel dates</strong><span>And carry a backup card</span></div></li>
+    <li tabindex="0" data-tip="Arriving with a confirmed hotel and a pre-arranged pickup means you won’t need help from strangers when you’re most tired.">${icon("check")}<div><strong>Book your first night and airport pickup</strong><span>Save the hotel’s phone number</span></div></li>
+    <li tabindex="0" data-tip="Keep a photo of your passport and visa on your phone and a paper copy in your bag, separate from the real passport.">${icon("id")}<div><strong>Copy your passport and visa</strong><span>On your phone and on paper</span></div></li>
+  </ul>
+  <h2>Emergency numbers to save</h2>
+  <div class="report">
+    <div class="report-row"><b>U.S. citizens in trouble abroad</b><span>State Department: <span class="mono">+1-202-501-4444</span> (from abroad)</span></div>
+    <div class="report-row"><b>India</b><span>Emergency: <span class="mono">112</span> · Tourist helpline: <span class="mono">1800-11-1363</span></span></div>
+    <div class="report-row"><b>Pakistan</b><span>Police: <span class="mono">15</span></span></div>
+    <div class="report-row"><b>U.S. Embassy</b><span>New Delhi (India) and Islamabad (Pakistan), plus consulates in other cities. Look up and save the one nearest your trip.</span></div>
+  </div>`,
+  quizzes:[{ id:"q-tr-visa", concept:"travelMoney",
+    q:"You search “India visa” online. The first result is “india-evisa-fast.com”, charging $180 for “express processing”. What should you do?",
+    options:[
+      {t:"Use it. Express processing sounds helpful", ok:false, why:"Look-alike visa sites charge far more than the real fee, and some just steal your passport details and payment."},
+      {t:"Apply on the official government website, indianvisaonline.gov.in", ok:true, why:"Correct. Government websites for India end in “.gov.in”. Pakistan’s official visa site is visa.nadra.gov.pk."},
+      {t:"Email them your passport photo first to check they’re real", ok:false, why:"Never send passport details to a site you aren’t sure about. Go to the official government site instead."}
+    ]}]
+},
+{ id:"travel-transport", section:"travel", kind:"lesson", title:"Taxis, stations and hotels",
+  lead:"Getting from the airport or station to your hotel is where many travel scams begin. Point at (or tap) each card for the truth.",
+  body:() => `
+  <div class="cards">
+    <div class="card" tabindex="0" data-tip-title="The truth" data-tip="Agree on the full fare before you get in, or use a prepaid taxi counter or a ride-hailing app so the price is fixed."><h3><span class="icon-dot">${icon("money")}</span>“The meter is broken”</h3><p>“No meter today, I give you good price.” The price at the end is much higher.</p><span class="hint">${icon("cursor")}Point here for the truth</span></div>
+    <div class="card" tabindex="0" data-tip-title="The truth" data-tip="Call your hotel yourself using the number from your booking. The driver earns a commission at the “better” hotel."><h3><span class="icon-dot">${icon("bank")}</span>“Your hotel is closed”</h3><p>“That hotel burned down / is full / is closed for repairs. I know a better one.”</p><span class="hint">${icon("cursor")}Point here for the truth</span></div>
+    <div class="card" tabindex="0" data-tip-title="The truth" data-tip="Walk past. Find the official ticket office inside the station yourself, and only ask uniformed staff working behind a counter."><h3><span class="icon-dot">${icon("alert")}</span>“The ticket office is closed”</h3><p>At train stations: “Your ticket isn’t valid. The tourist office is closed. Come with me to the government office.”</p><span class="hint">${icon("cursor")}Point here for the truth</span></div>
+    <div class="card" tabindex="0" data-tip-title="The truth" data-tip="Agree a price before anyone touches your bags, or say “No, thank you” firmly and keep hold of them."><h3><span class="icon-dot">${icon("gift")}</span>“Free” help with bags</h3><p>Someone grabs your luggage to “help”, then demands a large fee.</p><span class="hint">${icon("cursor")}Point here for the truth</span></div>
+    <div class="card" tabindex="0" data-tip-title="The truth" data-tip="A ride that cheap means the driver earns money from shops. You’ll spend hours being taken from one shop to another."><h3><span class="icon-dot">${icon("trophy")}</span>The super-cheap ride</h3><p>“Only 20 rupees for the whole day!” followed by “quick stops” at shops.</p><span class="hint">${icon("cursor")}Point here for the truth</span></div>
+  </div>
+  <div class="note">${icon("shield")}<p>Use the <b>prepaid taxi counter</b> inside the airport, your hotel’s pickup service, or a <b>ride-hailing app</b> (such as Uber or Ola in India, and Careem or inDrive in Pakistan) so the price is agreed before the ride.</p></div>`,
+  quizzes:[{ id:"q-tr-hotel", concept:"travelStreet",
+    q:"On the way from the airport, your driver says your hotel closed last week and offers to take you to “a much better one”. What should you do?",
+    options:[
+      {t:"Go to the driver’s hotel. He knows the city", ok:false, why:"Drivers earn commissions for bringing guests to certain hotels. Your hotel is very likely open."},
+      {t:"Call your hotel yourself on the number from your booking, and insist on going there", ok:true, why:"Right. One phone call ends this scam. If the driver refuses to take you, ask to stop somewhere busy and get another taxi."},
+      {t:"Ask the driver to call the hotel for you", ok:false, why:"He may call a friend who pretends to be your hotel. Make the call yourself."}
+    ]}]
+},
+{ id:"travel-people", section:"travel", kind:"lesson", title:"Friendly strangers, guides and shopping",
+  lead:"Many of these scams start with kindness. Enjoy friendly conversation, but be careful when it leads to a shop, a gift or a deal.",
+  body:() => `
+  <div class="cards">
+    <div class="card" tabindex="0" data-tip-title="The truth" data-tip="The gems are fake or worth far less, and no buyer is waiting back home. Never buy anything as an “investment” from someone you just met."><h3><span class="icon-dot">${icon("star")}</span>The gem export deal</h3><p>“Buy these gems here, and sell them back home for double. I’ll help you ship them.”</p><span class="hint">${icon("cursor")}Point here for the truth</span></div>
+    <div class="card" tabindex="0" data-tip-title="The truth" data-tip="Enjoy the chat, but politely decline invitations to shops, travel agencies or someone’s “uncle’s” business."><h3><span class="icon-dot">${icon("chat")}</span>“Let me practice my English”</h3><p>A friendly “student” invites you for tea, then walks you to a relative’s shop or travel agency.</p><span class="hint">${icon("cursor")}Point here for the truth</span></div>
+    <div class="card" tabindex="0" data-tip-title="The truth" data-tip="Say “No, thank you” before anything is handed to you or tied on. Real temples and mosques don’t demand a set donation."><h3><span class="icon-dot">${icon("gift")}</span>The “free” gift</h3><p>A bracelet tied on your wrist, a flower, a blessing or henna, then a demand for payment. Sometimes a fake priest demands a large “donation”.</p><span class="hint">${icon("cursor")}Point here for the truth</span></div>
+    <div class="card" tabindex="0" data-tip-title="The truth" data-tip="Check opening hours at the official ticket counter. If you want a guide, hire a licensed one from the official counter or your hotel."><h3><span class="icon-dot">${icon("person")}</span>Fake guides</h3><p>“The monument is closed today” or “You need a guide to go in”, near famous sites.</p><span class="hint">${icon("cursor")}Point here for the truth</span></div>
+    <div class="card" tabindex="0" data-tip-title="The truth" data-tip="Most offers are real kindness, but drugged food and drinks are used to rob travelers on trains and buses. Thank them warmly, decline, and eat sealed food you bought yourself."><h3><span class="icon-dot">${icon("alert")}</span>Snacks from strangers</h3><p>On a long train or bus ride, a friendly fellow traveler offers you food or a drink.</p><span class="hint">${icon("cursor")}Point here for the truth</span></div>
+    <div class="card" tabindex="0" data-tip-title="The truth" data-tip="If someone poses with you or offers to take your picture, agree any price first, or simply decline."><h3><span class="icon-dot">${icon("eye")}</span>The photo fee</h3><p>Someone poses for a photo with you, or takes yours, then demands money.</p><span class="hint">${icon("cursor")}Point here for the truth</span></div>
+  </div>`,
+  quizzes:[{ id:"q-tr-gems", concept:"travelStreet",
+    q:"A friendly shop owner offers to sell you gems at a “wholesale” price and says a partner in the U.S. will buy them from you for twice as much. What is this?",
+    options:[
+      {t:"A lucky business opportunity", ok:false, why:"There’s no partner and no profit. The gems are fake or heavily overpriced."},
+      {t:"A well-known gem scam. Politely leave", ok:true, why:"Correct. Any “buy here, sell for more back home” offer from a stranger is a scam."},
+      {t:"Fine if you only buy a small amount", ok:false, why:"A small “test” purchase is how they draw you into a bigger one. Walk away."}
+    ]}]
+},
+{ id:"travel-money", section:"travel", kind:"lesson", title:"Money, ATMs and fake officials",
+  lead:"Unfamiliar money and uniforms make travelers easy to fool. Point at each warning sign to learn what to do.",
+  body:() => `
+  <ul class="checklist">
+    <li tabindex="0" data-tip="Real police rarely ask tourists for their wallets. Hand over nothing; offer to go with them to the police station, or call the emergency number yourself (112 in India, 15 in Pakistan).">${icon("shield")}<div><strong>“Police” who want to check your wallet</strong><span>For “fake money” or “drugs”</span></div></li>
+    <li tabindex="0" data-tip="Count your change out loud, hand over one note at a time, and say the amount as you pay (“Here is 500”). Some sellers swap a large note for a small one and insist you made the mistake.">${icon("money")}<div><strong>Short-changing</strong><span>“You gave me 100, not 500”</span></div></li>
+    <li tabindex="0" data-tip="Learn what the current notes look like before you travel. Some older notes are no longer accepted, and may be passed to tourists as change.">${icon("eye")}<div><strong>Old or fake notes in your change</strong><span>Learn the money before you go</span></div></li>
+    <li tabindex="0" data-tip="Use ATMs inside banks, hotels or malls. Cover your PIN, and refuse “help” from anyone standing nearby. If something feels wrong, cancel and leave.">${icon("key")}<div><strong>A “helpful” stranger at the ATM</strong><span>Or a card reader that looks loose</span></div></li>
+    <li tabindex="0" data-tip="A better-than-normal rate on the street usually means fake notes or sleight of hand while counting. Exchange money at banks or official counters.">${icon("alert")}<div><strong>Street money changers</strong><span>Rates that seem too good</span></div></li>
+    <li tabindex="0" data-tip="A call to your room late at night: “This is the front desk, your card was declined. Please read me the number.” Hang up and walk down to the front desk in person.">${icon("phone")}<div><strong>The “front desk” phone call</strong><span>Asking for your card number</span></div></li>
+    <li tabindex="0" data-tip="Scammers set up free Wi-Fi with names like “Hotel_Guest_Free”. Ask staff for the real network name, and avoid banking on public Wi-Fi.">${icon("link")}<div><strong>Look-alike free Wi-Fi</strong><span>Ask staff for the real network</span></div></li>
+    <li tabindex="0" data-tip="If a card machine offers to charge you in U.S. dollars, choose the local currency. Paying in dollars usually adds a poor exchange rate. Not a crime, but a costly trick.">${icon("money")}<div><strong>“Pay in dollars, it’s easier”</strong><span>Choose local currency</span></div></li>
+  </ul>`,
+  quizzes:[{ id:"q-tr-desk", concept:"travelMoney",
+    q:"At 11 p.m. your hotel room phone rings: “Front desk here. Your card on file was declined. Please read me the card number and security code.” What should you do?",
+    options:[
+      {t:"Read the number. It’s the hotel phone, so it must be the hotel", ok:false, why:"Anyone can dial room numbers from outside or from the lobby. The caller may not be hotel staff at all."},
+      {t:"Hang up and go to the front desk in person, or call the desk yourself", ok:true, why:"Correct. The same rule as at home: hang up, and contact the business yourself."},
+      {t:"Give only the last four digits and the security code", ok:false, why:"Don’t give any card details on a call you didn’t make. Go to the desk in person."}
+    ]}]
+},
+{ id:"t-station", section:"travel", kind:"spot", title:"At a busy train station",
+  scenario:"You arrive at a big railway station in Delhi with a printed train ticket to Agra. As you walk toward the entrance, a man in a neat shirt with a lanyard comes up to you. Click on each part of the conversation that’s a red flag.",
+  flags:{
+    badge:{concept:"travelStreet", title:"A “railway employee” who approaches you", why:"Real staff work behind counters and don’t walk up to travelers outside. Anyone can wear a lanyard or show a homemade ID card."},
+    invalid:{concept:"travelStreet", title:"A surprise problem with your ticket", why:"Your ticket was fine. Inventing a problem makes you depend on him. Check at the official counter yourself."},
+    closed:{concept:"travelStreet", title:"“The office is closed”", why:"A classic station trick. The real office is almost always open; he wants to steer you away from it."},
+    office:{concept:"travelStreet", title:"A fake “government” tourist office", why:"Words like “Government” or “Official” on a sign mean nothing. These are private agencies that sell overpriced trips."},
+    cheap:{concept:"travelStreet", title:"Suspiciously cheap ride", why:"The driver gets paid a commission for delivering you to the agency."},
+    rush:{concept:"travelStreet", title:"Pressure to hurry", why:"Rushing stops you from walking inside and asking at the real counter."},
+    others:{concept:"travelStreet", title:"“Don’t listen to anyone else”", why:"Cutting you off from other people is a classic scam move. Honest helpers don’t mind you double-checking."},
+    pay:{concept:"travelMoney", title:"Big payment for a problem you didn’t have", why:"Hundreds of dollars for a car and hotel you didn’t need. Your original ticket would have worked."}
+  },
+  msg:{ kind:"talk", place:"Railway station entrance, Delhi",
+    lines:[
+      {who:"Man", t:"{{Hello, sir! Welcome to India. Where are you from?|Friendly small talk is normal and isn’t a red flag on its own.}}"},
+      {who:"You", t:"{{The United States. I’m catching the train to Agra.|This is you. Nothing wrong here.}}"},
+      {who:"Man", t:"[[badge:I work for the railway, see my ID card.]] [[invalid:Let me see your ticket… Oh no, this ticket is not confirmed. It is not valid.]]"},
+      {who:"Man", t:"[[closed:And the foreign tourist booking office upstairs is closed today for repairs.]]"},
+      {who:"Man", t:"{{Don’t worry, I will help you.|Offering help sounds kind, but watch where the help leads.}} [[office:I take you to the Government Tourist Office nearby, they can fix it.]] [[cheap:My friend’s auto-rickshaw will take you there for only 20 rupees.]]"},
+      {who:"Man", t:"[[rush:You must hurry, the last seats are selling right now.]] [[others:Don’t listen to other people here, they are all cheats.]]"},
+      {who:"“Agent”", t:"{{Welcome, please sit. Would you like some tea?|Hospitality is normal and often genuine. The problem is what comes next.}} [[pay:Your train is full. I can book a private car to Agra and a hotel for $450. Cash or card, pay now please.]]"}
+    ]}
+},
+{ id:"t-taxi", section:"travel", kind:"spot", title:"A late-night airport taxi",
+  scenario:"You land in Lahore late at night. Your hotel, the Garden View Hotel, is already booked. Outside arrivals, a man walks up to you. Click on each red flag.",
+  flags:{
+    official:{concept:"travelStreet", title:"“Official taxi” who approaches you", why:"Official taxis are booked at a counter, through your hotel or in an app. A driver who walks up calling himself “official” usually isn’t."},
+    meter:{concept:"travelMoney", title:"No meter and no agreed price", why:"“We decide later” means he decides later. Agree the fare before you get in, or don’t get in."},
+    hotel:{concept:"travelStreet", title:"“Your hotel is closed”", why:"You just booked it. This story steers you to a hotel that pays him a commission."},
+    better:{concept:"travelStreet", title:"His cousin’s “better” hotel", why:"Family-connection hotels and shops pay drivers for bringing tourists, and you pay more."},
+    nocall:{concept:"travelStreet", title:"Stops you from calling", why:"He doesn’t want you to find out the hotel is open. Make the call anyway."},
+    shop:{concept:"travelStreet", title:"A “quick stop” at a shop", why:"A tired traveler in a shop at midnight is easy to pressure. Insist on going straight to your hotel."},
+    dollars:{concept:"travelMoney", title:"A high fare in dollars", why:"Asking for dollars hides how high the price is in local money. Pay in local currency at an agreed price."}
+  },
+  msg:{ kind:"talk", place:"Outside arrivals, Lahore airport",
+    lines:[
+      {who:"Man", t:"[[official:Taxi, sir? I am official airport taxi.]]"},
+      {who:"You", t:"{{How much to the Garden View Hotel?|This is you. Asking the price first is a good habit.}}"},
+      {who:"Man", t:"[[meter:Meter is broken today. No problem, we decide later, I give you good price.]]"},
+      {who:"Man", t:"{{Please, come, my car is just here.|Drivers offering rides at airports is normal. Look at what he says next.}} [[hotel:Garden View Hotel? It closed last month, big problem with water.]] [[better:My cousin has a very nice hotel, much better, I take you there.]]"},
+      {who:"You", t:"{{I’d like to call the hotel first.|Exactly the right instinct.}}"},
+      {who:"Man", t:"[[nocall:No need, their phone lines are not working. Trust me.]] [[shop:And we stop at my brother’s carpet shop on the way, just looking, five minutes.]]"},
+      {who:"Man", t:"[[dollars:The fare is 50 dollars. Pay in dollars, it is easier for you.]]"}
+    ]}
+},
+{ id:"t-what", section:"travel", kind:"quizset", title:"What would you do abroad?",
+  lead:"Choose the best response to each situation.",
+  quizzes:[
+    { id:"q-tr-police", concept:"travelMoney", label:"Situation 1",
+      context:"Two men in plain clothes stop you on a busy street, flash a badge, and say they need to check your wallet for counterfeit money.",
+      q:"What should you do?",
+      options:[
+        {t:"Hand over your wallet. They’re police", ok:false, why:"Fake police “inspect” wallets and hand them back with cash missing, or simply run off with them."},
+        {t:"Keep your wallet. Offer to go with them to the police station, or call the police emergency number yourself", ok:true, why:"Correct. Real police can deal with you at the station. Fake ones will usually walk away."},
+        {t:"Show them just the cash, not the cards", ok:false, why:"Don’t hand over anything. Cash disappears fast in skilled hands."}
+      ]},
+    { id:"q-tr-bracelet", concept:"travelStreet", label:"Situation 2",
+      context:"A smiling woman ties a colorful bracelet on your wrist “for good luck”, then asks for 1,000 rupees.",
+      q:"What is the best response?",
+      options:[
+        {t:"Pay, so you don’t seem rude", ok:false, why:"Paying encourages the next demand, and others nearby may try the same trick."},
+        {t:"Take it off, hand it back, say “No, thank you” and keep walking", ok:true, why:"Right. Next time, say “No, thank you” and keep your hands to yourself before anything is given."},
+        {t:"Argue until she lowers the price", ok:false, why:"Arguing keeps you standing still, which is when pickpockets can strike. Hand it back and move on."}
+      ]},
+    { id:"q-tr-snacks", concept:"travelStreet", label:"Situation 3",
+      context:"On an overnight train, a friendly family sharing your compartment offers you homemade sweets and a cup of tea.",
+      q:"What is the safest choice?",
+      options:[
+        {t:"Accept, because refusing is rude", ok:false, why:"Most offers are genuine kindness, but drugging food and drinks to rob travelers does happen on long journeys."},
+        {t:"Thank them warmly, decline, and eat food you bought sealed yourself", ok:true, why:"Correct. A smile and “No, thank you, I just ate” is polite and safe. You can still enjoy their company."},
+        {t:"Accept the tea, but not the sweets", ok:false, why:"Drinks can be drugged just as easily as food."}
+      ]},
+    { id:"q-tr-atm", concept:"travelMoney", label:"Situation 4",
+      context:"A man standing next to a street ATM says the machine is tricky for foreigners and offers to help you.",
+      q:"What should you do?",
+      options:[
+        {t:"Let him help, but cover your PIN", ok:false, why:"“Helpers” swap cards, watch PINs from an angle, or distract you while a partner takes your cash."},
+        {t:"Decline, cancel the transaction, and use an ATM inside a bank or hotel", ok:true, why:"Right. ATMs inside banks and hotels are safer and less likely to have hidden card readers."},
+        {t:"Ask him to take out the money for you", ok:false, why:"Never give your card or PIN to anyone."}
+      ]}
+  ]
+},
 { id:"results", section:"results", kind:"results", title:"Your results" }
 ];
 
@@ -1033,6 +1213,10 @@ const QUIZ = {};
 SLIDES.forEach(s => (s.quizzes || []).forEach(q => { QUIZ[q.id] = q; }));
 const LEARN = SLIDES.filter(s => s.section === "learn");
 const PRACTICE = SLIDES.filter(s => s.section === "practice");
+const TRAVEL = SLIDES.filter(s => s.section === "travel");
+const sectionPos = s => s.section === "learn" ? `Lesson ${LEARN.indexOf(s) + 1} of ${LEARN.length}`
+  : s.section === "practice" ? `Practice ${PRACTICE.indexOf(s) + 1} of ${PRACTICE.length}`
+  : s.section === "travel" ? `Travel ${TRAVEL.indexOf(s) + 1} of ${TRAVEL.length}` : "";
 const idxOf = id => SLIDES.findIndex(s => s.id === id);
 const spotState = id => (state.spot[id] ||= { found:[], misses:0, revealed:false });
 const lastFb = {};
@@ -1122,10 +1306,11 @@ function renderMsg(msg, ctx) {
       ${ctx ? `<div class="statusbar">Point at a link to see where it really goes</div>` : ""}
     </div>`;
   }
-  if (msg.kind === "call") {
+  if (msg.kind === "call" || msg.kind === "talk") {
+    const talk = msg.kind === "talk";
     const lines = msg.lines.map(l => `<li class="line ${l.who === "You" ? "you" : "caller"}"><span class="who">${l.who}</span><p>${P(l.t)}</p></li>`).join("");
     return `<div class="mock call${play}">
-      <div class="call-top"><span class="call-avatar">${icon("phone")}</span><div class="call-id">${P(msg.callerId)}</div><small>Phone call · transcript</small></div>
+      <div class="call-top"><span class="call-avatar">${icon(talk ? "family" : "phone")}</span><div class="call-id">${talk ? esc(msg.place) : P(msg.callerId)}</div><small>${talk ? "In person · what was said" : "Phone call · transcript"}</small></div>
       <ol class="transcript">${lines}</ol></div>`;
   }
   if (msg.kind === "popup") {
@@ -1175,7 +1360,7 @@ function renderSpotPanel(s) {
   if (!fb) {
     if (got === total) fb = `<div class="fbcard good"><span class="fbi">${icon("trophy")}</span><div><strong>You found every red flag!</strong><p>Great eye. Press Next to continue.</p></div></div>`;
     else if (st.revealed) fb = `<div class="fbcard"><span class="fbi">${icon("eye")}</span><div><strong>All red flags are showing</strong><p>Orange highlights are the ones you missed. Point at any highlight to read why.</p></div></div>`;
-    else fb = `<div class="fbcard"><span class="fbi">${icon("cursor")}</span><div><strong>Find ${total} red flags</strong><p>Click or tap on anything in the ${s.msg.kind === "call" ? "call" : "message"} that looks suspicious.</p></div></div>`;
+    else fb = `<div class="fbcard"><span class="fbi">${icon("cursor")}</span><div><strong>Find ${total} red flags</strong><p>Click or tap on anything in the ${s.msg.kind === "call" ? "call" : s.msg.kind === "talk" ? "conversation" : "message"} that looks suspicious.</p></div></div>`;
   }
   return `<div class="panel">
     <div class="tally"><strong>Red flags found: ${got} of ${total}</strong><div class="dots" aria-hidden="true">${dots}</div></div>
@@ -1189,10 +1374,7 @@ function renderSpotPanel(s) {
 const stage = $("#stage");
 
 function slideHead(s) {
-  let eb;
-  if (s.section === "learn") eb = `<span class="pill">Lesson ${LEARN.indexOf(s) + 1} of ${LEARN.length}</span>`;
-  else if (s.section === "practice") eb = `<span class="pill">Practice ${PRACTICE.indexOf(s) + 1} of ${PRACTICE.length}</span>`;
-  else eb = `<span class="pill">Finished</span>`;
+  const eb = `<span class="pill">${sectionPos(s) || "Finished"}</span>`;
   return `<div class="slide-head"><p class="eyebrow">${eb}</p><h1>${s.title}</h1>${s.lead ? `<p class="lead">${s.lead}</p>` : ""}</div>`;
 }
 
@@ -1238,7 +1420,7 @@ function renderResume() {
 /* ================= results ================= */
 function tally() {
   const c = {}; Object.keys(CONCEPTS).forEach(k => c[k] = { earned:0, possible:0 });
-  const lessonQ = [0, 0], pracQ = [0, 0], flags = [0, 0];
+  const lessonQ = [0, 0], pracQ = [0, 0], flags = [0, 0], travel = [0, 0];
   let misses = 0, attempted = 0;
   SLIDES.forEach(s => {
     (s.quizzes || []).forEach(q => {
@@ -1246,20 +1428,21 @@ function tally() {
       const ok = a !== undefined && a !== null && q.options[a].ok;
       if (a !== undefined && a !== null) attempted++;
       c[q.concept].possible++; if (ok) c[q.concept].earned++;
-      const b = s.section === "learn" ? lessonQ : pracQ; b[1]++; if (ok) b[0]++;
+      const b = s.section === "learn" ? lessonQ : s.section === "travel" ? travel : pracQ; b[1]++; if (ok) b[0]++;
     });
     if (s.kind === "spot") {
       const st = state.spot[s.id] || { found:[], misses:0 };
       if (st.found.length || st.revealed || st.misses) attempted++;
+      const b = s.section === "travel" ? travel : flags;
       Object.entries(s.flags).forEach(([k, f]) => {
-        c[f.concept].possible++; flags[1]++;
-        if (st.found.includes(k)) { c[f.concept].earned++; flags[0]++; }
+        c[f.concept].possible++; b[1]++;
+        if (st.found.includes(k)) { c[f.concept].earned++; b[0]++; }
       });
       misses += st.misses || 0;
     }
   });
-  const earned = lessonQ[0] + pracQ[0] + flags[0], possible = lessonQ[1] + pracQ[1] + flags[1];
-  return { c, lessonQ, pracQ, flags, misses, earned, possible, attempted, pct: possible ? Math.round(earned / possible * 100) : 0 };
+  const earned = lessonQ[0] + pracQ[0] + flags[0] + travel[0], possible = lessonQ[1] + pracQ[1] + flags[1] + travel[1];
+  return { c, lessonQ, pracQ, flags, travel, misses, earned, possible, attempted, pct: possible ? Math.round(earned / possible * 100) : 0 };
 }
 
 function renderResults() {
@@ -1291,6 +1474,7 @@ function renderResults() {
     <div class="stat"><b>${t.lessonQ[0]} / ${t.lessonQ[1]}</b><span>Lesson questions correct</span></div>
     <div class="stat"><b>${t.flags[0]} / ${t.flags[1]}</b><span>Red flags found</span></div>
     <div class="stat"><b>${t.pracQ[0]} / ${t.pracQ[1]}</b><span>Practice questions correct</span></div>
+    <div class="stat"><b>${t.travel[0]} / ${t.travel[1]}</b><span>Travel points (questions and red flags)</span></div>
     <div class="stat"><b>${t.misses}</b><span>Safe parts clicked by mistake</span></div>
   </div>
   <div class="res-cols">
@@ -1301,7 +1485,7 @@ function renderResults() {
     <div class="res-group"><h2>${icon("shield")}Remember the four habits</h2>
       <div class="rules"><div class="rule"><span class="word">Stop</span></div><div class="rule"><span class="word">Check</span></div><div class="rule"><span class="word">Talk</span></div><div class="rule"><span class="word">Report</span></div></div></div>
     <div class="res-group"><h2>${icon("redo")}Try again</h2>
-      <div class="btn-row"><button type="button" class="btn solid" data-act="retry">Redo the practice section</button>
+      <div class="btn-row"><button type="button" class="btn solid" data-act="retry">Redo all practice exercises</button>
       <button type="button" class="btn" data-act="restart">Start over from the beginning</button></div>
       <div id="confirmBox"></div></div>
   </div>`;
@@ -1402,7 +1586,7 @@ function doAct(btn) {
   if (a === "reveal") { spotState(s.id).revealed = true; delete lastFb[s.id]; save(); renderSlide(true); }
   else if (a === "goto") go(idxOf(btn.dataset.id));
   else if (a === "retry") {
-    PRACTICE.forEach(p => { delete state.spot[p.id]; delete lastFb[p.id]; (p.quizzes || []).forEach(q => delete state.quiz[q.id]); });
+    SLIDES.filter(p => p.kind === "spot" || p.kind === "quizset").forEach(p => { delete state.spot[p.id]; delete lastFb[p.id]; (p.quizzes || []).forEach(q => delete state.quiz[q.id]); });
     save(); go(idxOf("practice-intro"));
   }
   else if (a === "restart") {
@@ -1513,9 +1697,9 @@ function updateChrome() {
   if (i === 0) label = "Start";
   else if (nextS && nextS.kind === "results") label = "See my score";
   else if (nextS && nextS.id === "practice-intro") label = "Start practice";
+  else if (nextS && nextS.id === "travel-intro") label = "Travel scams";
   nextBtn.innerHTML = label + icon("right");
-  const where = s.section === "learn" ? `Lesson ${LEARN.indexOf(s) + 1} of ${LEARN.length}` : s.section === "practice" ? `Practice ${PRACTICE.indexOf(s) + 1} of ${PRACTICE.length}` : "Your results";
-  $("#where").textContent = where;
+  $("#where").textContent = sectionPos(s) || "Your results";
   $("#bar").style.width = (i / (SLIDES.length - 1) * 100) + "%";
   const scored = s.kind === "spot" || s.kind === "quizset" || !!s.quizzes;
   $("#navHint").textContent = scored && !slideDone(s) ? "You can skip and come back to this later" : "Tip: you can also use the arrow keys";
@@ -1528,7 +1712,7 @@ function renderToc() {
     const done = slideDone(s);
     return `<li><button type="button" data-goto="${i}" ${i === state.idx ? 'aria-current="true"' : ""}><span class="st ${done ? "done" : ""}">${done ? icon("check") : ""}</span><span>${s.title}</span></button></li>`;
   }).join("")}</ul>`;
-  $("#tocBody").innerHTML = group("Part 1 · Learn", LEARN) + group("Part 2 · Practice", PRACTICE) + group("Finish", SLIDES.filter(s => s.section === "results"));
+  $("#tocBody").innerHTML = group("Part 1 · Learn", LEARN) + group("Part 2 · Practice", PRACTICE) + group("Part 3 · Traveling abroad", TRAVEL) + group("Finish", SLIDES.filter(s => s.section === "results"));
 }
 function openToc() { renderToc(); $("#drawer").hidden = false; $("#closeToc").focus(); }
 function closeToc() { $("#drawer").hidden = true; $("#openToc").focus(); }
