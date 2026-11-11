@@ -3,21 +3,27 @@
 An interactive course that teaches people, especially older adults, to recognize scam
 emails, text messages, WhatsApp/chat messages and phone calls.
 
-- **Part 1: Learn** (13 lessons): phishing, spear phishing and whaling, smishing, chat-app
+The course has two tabs. Each has its own lessons, practice, progress and results page.
+
+**Scam messages & calls tab**
+- **Learn** (13 lessons): phishing, spear phishing and whaling, smishing, chat-app
   scams, phone scams and their scripts, red flags, how to read a web address, and four
   safety habits. Most lessons end with a quick question.
-- **Part 2: Practice** (10 exercises): realistic emails, texts, chat messages and call
+- **Practice** (10 exercises): realistic emails, texts, chat messages and call
   transcripts. Click the parts that look wrong; each click gets instant right/wrong
   feedback with an explanation, and found red flags are numbered on the message.
   There are also "Scam or safe?" and "What would you do?" rounds.
-- **Halfway results**: a score and topic breakdown for Parts 1 and 2, before moving on.
-- **Part 3: Traveling abroad** (7 slides): in-person scams that target U.S. travelers in
-  places such as India and Pakistan: preparing before you go (official visa sites, STEP,
-  emergency numbers), taxi/station/hotel tricks, friendly-stranger, gem and fake-guide
-  scams, money/ATM/fake-police tricks, two click-the-red-flag conversations (a Delhi
-  railway station and a Lahore airport taxi), and a "What would you do abroad?" round.
-- **Results**: an overall score, a breakdown across 12 topics (what you understand well
-  vs. what to review), and buttons that jump back to the matching lessons.
+- **Results**: a score and a breakdown across 10 topics (what you understand well vs.
+  what to review), with buttons that jump back to the matching lessons.
+
+**Travel scams abroad tab**
+- **Learn** (4 lessons): in-person scams that target U.S. travelers in places such as
+  India and Pakistan: preparing before you go (official visa sites, STEP, emergency
+  numbers), taxi/station/hotel tricks, friendly-stranger, gem and fake-guide scams, and
+  money/ATM/fake-police tricks.
+- **Practice** (3 exercises): two click-the-red-flag conversations (a Delhi railway
+  station and a Lahore airport taxi) and a "What would you do abroad?" round.
+- **Results**: a score and a breakdown across 2 travel topics, with review links.
 
 Made for ease of use: large text and buttons, text-size controls, a read-aloud button,
 hover/tap explanations, keyboard arrows, light and dark mode, and progress saved in the
