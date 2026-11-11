@@ -1022,6 +1022,8 @@ const SLIDES = [
       ]}
   ]
 },
+{ id:"checkpoint", section:"checkpoint", kind:"checkpoint", title:"How you did on scam messages and calls",
+  lead:"Here’s your score for Parts 1 and 2: the lessons and practice on phishing emails, texts, chat apps and phone calls." },
 /* ---------------------------------------------------------------- TRAVEL (in person, abroad) */
 { id:"travel-intro", section:"travel", kind:"lesson", title:"Traveling abroad: scams that happen face to face",
   lead:"Most people you’ll meet in India, Pakistan and elsewhere are honest and generous to visitors. But in busy tourist spots, a few scammers look for travelers who are tired, unsure of prices and too polite to say no.",
@@ -1216,7 +1218,8 @@ const PRACTICE = SLIDES.filter(s => s.section === "practice");
 const TRAVEL = SLIDES.filter(s => s.section === "travel");
 const sectionPos = s => s.section === "learn" ? `Lesson ${LEARN.indexOf(s) + 1} of ${LEARN.length}`
   : s.section === "practice" ? `Practice ${PRACTICE.indexOf(s) + 1} of ${PRACTICE.length}`
-  : s.section === "travel" ? `Travel ${TRAVEL.indexOf(s) + 1} of ${TRAVEL.length}` : "";
+  : s.section === "travel" ? `Travel ${TRAVEL.indexOf(s) + 1} of ${TRAVEL.length}`
+  : s.section === "checkpoint" ? "Halfway results" : "";
 const idxOf = id => SLIDES.findIndex(s => s.id === id);
 const spotState = id => (state.spot[id] ||= { found:[], misses:0, revealed:false });
 const lastFb = {};
@@ -1399,7 +1402,9 @@ function renderSlide(keepScroll) {
   } else if (s.kind === "quizset") {
     html += `<div class="quizgrid">${s.quizzes.map(q => renderQuiz(q)).join("")}</div>`;
   } else if (s.kind === "results") {
-    html += renderResults();
+    html += renderResults("final");
+  } else if (s.kind === "checkpoint") {
+    html += renderResults("checkpoint");
   }
   stage.innerHTML = `<div class="slide gut"><div class="wrap">${html}</div></div>`;
   if (s.id === "welcome") renderResume();
@@ -1418,11 +1423,13 @@ function renderResume() {
 }
 
 /* ================= results ================= */
-function tally() {
+// sections: optional list of section names to count (default: whole course)
+function tally(sections) {
   const c = {}; Object.keys(CONCEPTS).forEach(k => c[k] = { earned:0, possible:0 });
   const lessonQ = [0, 0], pracQ = [0, 0], flags = [0, 0], travel = [0, 0];
   let misses = 0, attempted = 0;
   SLIDES.forEach(s => {
+    if (sections && !sections.includes(s.section)) return;
     (s.quizzes || []).forEach(q => {
       const a = state.quiz[q.id];
       const ok = a !== undefined && a !== null && q.options[a].ok;
@@ -1445,14 +1452,16 @@ function tally() {
   return { c, lessonQ, pracQ, flags, travel, misses, earned, possible, attempted, pct: possible ? Math.round(earned / possible * 100) : 0 };
 }
 
-function renderResults() {
-  const t = tally();
+// mode: "final" (whole course) or "checkpoint" (Parts 1 and 2 only, shown before the travel section)
+function renderResults(mode = "final") {
+  const half = mode === "checkpoint";
+  const t = tally(half ? ["learn", "practice"] : null);
   const R = 52, C = 2 * Math.PI * R;
   let headline, msg;
-  if (t.pct >= 85) { headline = "Excellent! You have a sharp eye for scams."; msg = "You spotted most of the tricks scammers use. Share what you’ve learned with friends and family."; }
+  if (t.pct >= 85) { headline = half ? "Excellent! You’re spotting scam messages and calls like a pro." : "Excellent! You have a sharp eye for scams."; msg = "You spotted most of the tricks scammers use. Share what you’ve learned with friends and family."; }
   else if (t.pct >= 65) { headline = "Good work. You’re well on your way."; msg = "You caught many of the warning signs. Look over the topics below marked for review, then try the practice again."; }
   else { headline = "A good start. Practice makes perfect."; msg = "Every scam you learn to recognize is one you won’t fall for. Review the lessons below and try the practice again."; }
-  if (!t.attempted) { headline = "You haven’t answered any questions yet."; msg = "Go back through the lessons and practice, then return here for your score."; }
+  if (!t.attempted) { headline = "You haven’t answered any questions yet."; msg = half ? "Go back through the lessons and practice, then return here to see how you did." : "Go back through the lessons and practice, then return here for your score."; }
   const rows = Object.entries(t.c).filter(([, v]) => v.possible).map(([k, v]) => ({ k, ...v, pct: Math.round(v.earned / v.possible * 100) }));
   const strong = rows.filter(r => r.pct >= 80).sort((a, b) => b.pct - a.pct);
   const weak = rows.filter(r => r.pct < 80).sort((a, b) => a.pct - b.pct);
@@ -1468,13 +1477,13 @@ function renderResults() {
     <svg class="ring" viewBox="0 0 128 128" role="img" aria-label="Score ${t.pct} percent">
       <circle class="track" cx="64" cy="64" r="${R}"/><circle class="val" cx="64" cy="64" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - t.pct / 100)).toFixed(1)}"/>
       <text x="64" y="64">${t.pct}%</text></svg>
-    <div class="score-copy"><h2>${headline}</h2><p>${msg}</p><p class="where">You earned ${t.earned} of ${t.possible} points.</p></div>
+    <div class="score-copy"><h2>${headline}</h2><p>${msg}</p><p class="where">${half ? "Parts 1 and 2 (emails, texts, chat apps and phone calls): " : "Whole course: "}you earned ${t.earned} of ${t.possible} points.</p></div>
   </div>
   <div class="stats">
     <div class="stat"><b>${t.lessonQ[0]} / ${t.lessonQ[1]}</b><span>Lesson questions correct</span></div>
     <div class="stat"><b>${t.flags[0]} / ${t.flags[1]}</b><span>Red flags found</span></div>
     <div class="stat"><b>${t.pracQ[0]} / ${t.pracQ[1]}</b><span>Practice questions correct</span></div>
-    <div class="stat"><b>${t.travel[0]} / ${t.travel[1]}</b><span>Travel points (questions and red flags)</span></div>
+    ${half ? "" : `<div class="stat"><b>${t.travel[0]} / ${t.travel[1]}</b><span>Travel points (questions and red flags)</span></div>`}
     <div class="stat"><b>${t.misses}</b><span>Safe parts clicked by mistake</span></div>
   </div>
   <div class="res-cols">
@@ -1484,10 +1493,14 @@ function renderResults() {
   <div class="res-cols">
     <div class="res-group"><h2>${icon("shield")}Remember the four habits</h2>
       <div class="rules"><div class="rule"><span class="word">Stop</span></div><div class="rule"><span class="word">Check</span></div><div class="rule"><span class="word">Talk</span></div><div class="rule"><span class="word">Report</span></div></div></div>
-    <div class="res-group"><h2>${icon("redo")}Try again</h2>
+    ${half ? `<div class="res-group"><h2>${icon("arrow")}Next up: scams when you travel</h2>
+      <p>Part 3 covers in-person scams that target U.S. travelers abroad. It’s scored separately and included in your final results.</p>
+      <div class="btn-row"><button type="button" class="btn solid" data-act="goto" data-id="travel-intro">Continue to travel scams</button>
+      <button type="button" class="btn" data-act="retry" data-scope="practice">Redo the practice exercises</button></div></div>`
+    : `<div class="res-group"><h2>${icon("redo")}Try again</h2>
       <div class="btn-row"><button type="button" class="btn solid" data-act="retry">Redo all practice exercises</button>
       <button type="button" class="btn" data-act="restart">Start over from the beginning</button></div>
-      <div id="confirmBox"></div></div>
+      <div id="confirmBox"></div></div>`}
   </div>`;
 }
 
@@ -1586,7 +1599,8 @@ function doAct(btn) {
   if (a === "reveal") { spotState(s.id).revealed = true; delete lastFb[s.id]; save(); renderSlide(true); }
   else if (a === "goto") go(idxOf(btn.dataset.id));
   else if (a === "retry") {
-    SLIDES.filter(p => p.kind === "spot" || p.kind === "quizset").forEach(p => { delete state.spot[p.id]; delete lastFb[p.id]; (p.quizzes || []).forEach(q => delete state.quiz[q.id]); });
+    const scope = btn.dataset.scope;
+    SLIDES.filter(p => (p.kind === "spot" || p.kind === "quizset") && (!scope || p.section === scope)).forEach(p => { delete state.spot[p.id]; delete lastFb[p.id]; (p.quizzes || []).forEach(q => delete state.quiz[q.id]); });
     save(); go(idxOf("practice-intro"));
   }
   else if (a === "restart") {
@@ -1696,6 +1710,7 @@ function updateChrome() {
   let label = "Next";
   if (i === 0) label = "Start";
   else if (nextS && nextS.kind === "results") label = "See my score";
+  else if (nextS && nextS.kind === "checkpoint") label = "See how I did";
   else if (nextS && nextS.id === "practice-intro") label = "Start practice";
   else if (nextS && nextS.id === "travel-intro") label = "Travel scams";
   nextBtn.innerHTML = label + icon("right");
@@ -1712,7 +1727,7 @@ function renderToc() {
     const done = slideDone(s);
     return `<li><button type="button" data-goto="${i}" ${i === state.idx ? 'aria-current="true"' : ""}><span class="st ${done ? "done" : ""}">${done ? icon("check") : ""}</span><span>${s.title}</span></button></li>`;
   }).join("")}</ul>`;
-  $("#tocBody").innerHTML = group("Part 1 · Learn", LEARN) + group("Part 2 · Practice", PRACTICE) + group("Part 3 · Traveling abroad", TRAVEL) + group("Finish", SLIDES.filter(s => s.section === "results"));
+  $("#tocBody").innerHTML = group("Part 1 · Learn", LEARN) + group("Part 2 · Practice", SLIDES.filter(s => s.section === "practice" || s.section === "checkpoint")) + group("Part 3 · Traveling abroad", TRAVEL) + group("Finish", SLIDES.filter(s => s.section === "results"));
 }
 function openToc() { renderToc(); $("#drawer").hidden = false; $("#closeToc").focus(); }
 function closeToc() { $("#drawer").hidden = true; $("#openToc").focus(); }

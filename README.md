@@ -10,6 +10,7 @@ emails, text messages, WhatsApp/chat messages and phone calls.
   transcripts. Click the parts that look wrong; each click gets instant right/wrong
   feedback with an explanation, and found red flags are numbered on the message.
   There are also "Scam or safe?" and "What would you do?" rounds.
+- **Halfway results**: a score and topic breakdown for Parts 1 and 2, before moving on.
 - **Part 3: Traveling abroad** (7 slides): in-person scams that target U.S. travelers in
   places such as India and Pakistan: preparing before you go (official visa sites, STEP,
   emergency numbers), taxi/station/hotel tricks, friendly-stranger, gem and fake-guide
